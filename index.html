@@ -151,6 +151,8 @@
       let f1 = { n: 1, d: 2 };
       let f2 = { n: 1, d: 2 };
       let targetH = 0;
+      let finalNum = 0;
+      let finalDen = 0;
 
       // --- Math Helpers ---
       const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
@@ -260,6 +262,8 @@
             den !== 0 &&
             Math.abs(num / den - targetRatio) < 0.001
           ) {
+            finalNum = num;
+            finalDen = den;
             triggerConfetti(window.innerWidth / 2, window.innerHeight / 2);
             gameState = 3;
             updateUI();
@@ -339,7 +343,18 @@
                 `;
         } else if (gameState === 3) {
           iconContainer.innerHTML = "🎉";
-          instructionText.innerHTML = `<span class="text-green-600 font-bold">Amazing job! You solved it correctly! 🌟</span>`;
+          instructionText.innerHTML = `
+            <div class="flex flex-col w-full gap-1.5 md:gap-2">
+              <span class="text-green-700 font-bold text-sm sm:text-base">Amazing job! You just did fraction multiplication! 🌟</span>
+              <div class="flex items-center gap-2 md:gap-3 bg-green-100/60 px-3 py-1.5 rounded-xl border-2 border-green-200 w-fit">
+                ${formatFraction(f1.n, f1.d)}
+                <span class="text-green-800 font-black text-lg md:text-xl">×</span>
+                ${formatFraction(f2.n, f2.d)}
+                <span class="text-green-800 font-black text-lg md:text-xl">=</span>
+                ${formatFraction(finalNum, finalDen)}
+              </div>
+            </div>
+          `;
           actionBtn.innerHTML = "PLAY AGAIN";
           setupActionButtonClasses(true);
         }
