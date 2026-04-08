@@ -1,274 +1,330 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fraction Bears Math Game</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
         }
-        .animate-shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-5px);
         }
-        @keyframes pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(5px);
         }
-        .animate-pop {
-            animation: pop 0.3s ease-out forwards;
+      }
+      .animate-shake {
+        animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
         }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        50% {
+          transform: scale(1.1);
+          opacity: 1;
         }
-        .confetti-piece {
-            position: absolute;
-            animation: floatUp 1.5s ease-out forwards;
-            pointer-events: none;
-            z-index: 50;
+        100% {
+          transform: scale(1);
+          opacity: 1;
         }
-        
-        /* Removing number input arrows */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+      }
+      .animate-pop {
+        animation: pop 0.3s ease-out forwards;
+      }
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
         }
-        input[type=number] {
-            -moz-appearance: textfield;
+        100% {
+          transform: translateY(-100px) scale(0);
+          opacity: 0;
         }
-    </style>
-</head>
-<body class="min-h-screen bg-green-50 flex flex-col items-center justify-between font-sans select-none pb-8 overflow-x-hidden">
+      }
+      .confetti-piece {
+        position: absolute;
+        animation: floatUp 1.5s ease-out forwards;
+        pointer-events: none;
+        z-index: 50;
+      }
 
+      /* Removing number input arrows */
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-green-50 flex flex-col items-center justify-between font-sans select-none pb-8 overflow-x-hidden"
+  >
     <!-- Confetti Container -->
-    <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden z-50"></div>
+    <div
+      id="confetti-container"
+      class="fixed inset-0 pointer-events-none overflow-hidden z-50"
+    ></div>
 
     <!-- Header -->
-    <div class="w-full bg-green-900 text-white p-4 shadow-md flex justify-between items-center z-10">
-        <h1 class="text-2xl font-bold tracking-wider">🐻 Forest Fractions</h1>
-        <button onclick="initGame()" class="bg-green-700 hover:bg-green-600 px-4 py-2 rounded-full font-bold transition-transform active:scale-95 flex items-center gap-2 cursor-pointer">
-            <span>↺</span> Restart
-        </button>
+    <div
+      class="w-full bg-green-900 text-white p-4 shadow-md flex justify-between items-center z-10"
+    >
+      <h1 class="text-2xl font-bold tracking-wider">🐻 Forest Fractions</h1>
+      <button
+        onclick="initGame()"
+        class="bg-green-700 hover:bg-green-600 px-4 py-2 rounded-full font-bold transition-transform active:scale-95 flex items-center gap-2 cursor-pointer"
+      >
+        <span>↺</span> Restart
+      </button>
     </div>
 
     <!-- Game Area -->
-    <div class="flex-1 w-full max-w-4xl p-6 flex flex-col items-center justify-center gap-8 relative">
-        <div id="game-board" class="flex flex-col gap-6">
-            <!-- Bears will be injected here -->
-        </div>
+    <div
+      class="flex-1 w-full max-w-4xl p-6 flex flex-col items-center justify-center gap-8 relative"
+    >
+      <div id="game-board" class="flex flex-col gap-6">
+        <!-- Bears will be injected here -->
+      </div>
     </div>
 
     <!-- Instruction & Interaction Panel -->
-    <div id="control-panel" class="w-full max-w-3xl bg-white rounded-3xl p-6 shadow-2xl border-4 border-green-200 flex flex-col sm:flex-row items-center gap-6 justify-between transition-colors">
-        
-        <div class="flex-1 flex items-center gap-4 text-xl sm:text-2xl text-green-900 font-medium">
-            <div id="icon-container" class="bg-yellow-100 p-3 rounded-full shrink-0">
-                📝
-            </div>
-            
-            <div id="instruction-text" class="flex-1 flex items-center flex-wrap leading-relaxed">
-                <!-- Instructions injected here -->
-            </div>
+    <div
+      id="control-panel"
+      class="w-full max-w-3xl bg-white rounded-3xl p-6 shadow-2xl border-4 border-green-200 flex flex-col sm:flex-row items-center gap-6 justify-between transition-colors"
+    >
+      <div
+        class="flex-1 flex items-center gap-4 text-xl sm:text-2xl text-green-900 font-medium"
+      >
+        <div
+          id="icon-container"
+          class="bg-yellow-100 p-3 rounded-full shrink-0"
+        >
+          📝
         </div>
 
-        <button id="action-btn" onclick="handleAction()" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-8 py-4 rounded-2xl font-bold text-2xl shadow-[0_6px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[6px] transition-all cursor-pointer">
-            DONE
-        </button>
+        <div
+          id="instruction-text"
+          class="flex-1 flex items-center flex-wrap leading-relaxed"
+        >
+          <!-- Instructions injected here -->
+        </div>
+      </div>
+
+      <button
+        id="action-btn"
+        onclick="handleAction()"
+        class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-8 py-4 rounded-2xl font-bold text-2xl shadow-[0_6px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[6px] transition-all cursor-pointer"
+      >
+        DONE
+      </button>
     </div>
 
     <script>
-        // --- Game State ---
-        let gameState = 0; // 0: STAGE_1, 1: STAGE_2, 2: STAGE_3, 3: COMPLETED
-        let cols = 6;
-        const rows = 4;
-        let totalBears = rows * cols;
-        let bears = [];
-        let f1 = { n: 1, d: 2 };
-        let f2 = { n: 1, d: 2 };
-        let targetH = 0;
+      // --- Game State ---
+      let gameState = 0; // 0: STAGE_1, 1: STAGE_2, 2: STAGE_3, 3: COMPLETED
+      let cols = 6;
+      const rows = 4;
+      let totalBears = rows * cols;
+      let bears = [];
+      let f1 = { n: 1, d: 2 };
+      let f2 = { n: 1, d: 2 };
+      let targetH = 0;
 
-        // --- Math Helpers ---
-        const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+      // --- Math Helpers ---
+      const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
 
-        const getValidFraction = (total, minTarget) => {
-            let options = [];
-            for (let d = 2; d <= total; d++) {
-                if (total % d === 0) { // Ensures NO decimals
-                    for (let n = 1; n < d; n++) {
-                        let target = (total * n) / d;
-                        if (target >= minTarget) {
-                            options.push({ n, d, target });
-                        }
-                    }
-                }
+      const getValidFraction = (total, minTarget) => {
+        let options = [];
+        for (let d = 2; d <= total; d++) {
+          if (total % d === 0) {
+            // Ensures NO decimals
+            for (let n = 1; n < d; n++) {
+              let target = (total * n) / d;
+              if (target >= minTarget) {
+                options.push({ n, d, target });
+              }
             }
-            if (options.length === 0) return { n: 1, d: total, target: 1 };
-            
-            let picked = options[Math.floor(Math.random() * options.length)];
-            const divisor = gcd(picked.n, picked.d);
-            return { n: picked.n / divisor, d: picked.d / divisor };
-        };
+          }
+        }
+        if (options.length === 0) return { n: 1, d: total, target: 1 };
 
-        // --- UI Formatters ---
-        const formatFraction = (n, d) => `
+        let picked = options[Math.floor(Math.random() * options.length)];
+        const divisor = gcd(picked.n, picked.d);
+        return { n: picked.n / divisor, d: picked.d / divisor };
+      };
+
+      // --- UI Formatters ---
+      const formatFraction = (n, d) => `
             <span class="inline-flex flex-col items-center align-middle mx-2 text-xl font-bold text-green-900">
                 <span class="border-b-[3px] border-green-900 leading-none px-1 pb-[1px]">${n}</span>
                 <span class="leading-none px-1 pt-[1px]">${d}</span>
             </span>
         `;
 
-        // --- Core Game Logic ---
-        function initGame() {
-            cols = Math.floor(Math.random() * 5) + 3; // 3 to 7 columns
-            totalBears = rows * cols;
-            
-            f1 = getValidFraction(totalBears, 4);
-            targetH = (totalBears * f1.n) / f1.d;
-            f2 = getValidFraction(targetH, 1);
-            
-            bears = Array.from({ length: totalBears }, (_, i) => ({
-                id: i,
-                row: Math.floor(i / cols),
-                state: 0 // 0: Normal, 1: Has Honey, 2: Eaten Honey
-            }));
-            
-            gameState = 0;
+      // --- Core Game Logic ---
+      function initGame() {
+        cols = Math.floor(Math.random() * 5) + 3; // 3 to 7 columns
+        totalBears = rows * cols;
+
+        f1 = getValidFraction(totalBears, 4);
+        targetH = (totalBears * f1.n) / f1.d;
+        f2 = getValidFraction(targetH, 1);
+
+        bears = Array.from({ length: totalBears }, (_, i) => ({
+          id: i,
+          row: Math.floor(i / cols),
+          state: 0, // 0: Normal, 1: Has Honey, 2: Eaten Honey
+        }));
+
+        gameState = 0;
+        updateUI();
+        renderBears();
+      }
+
+      function handleBearClick(index) {
+        if (gameState === 3) return; // Game over
+
+        const bear = bears[index];
+
+        if (gameState === 0) {
+          // Toggle Honey (0 <-> 1)
+          bear.state = bear.state === 0 ? 1 : 0;
+        } else if (gameState === 1) {
+          // Toggle Eating (1 <-> 2) ONLY if bear has honey
+          if (bear.state > 0) {
+            bear.state = bear.state === 1 ? 2 : 1;
+          }
+        }
+        renderBears();
+      }
+
+      function handleAction() {
+        const panel = document.getElementById("control-panel");
+        const rect = panel.getBoundingClientRect();
+
+        if (gameState === 0) {
+          const currentH = bears.filter((b) => b.state >= 1).length;
+          if (currentH === targetH) {
+            triggerConfetti(rect.x + rect.width / 2, rect.y);
+            gameState = 1;
             updateUI();
-            renderBears();
+          } else {
+            triggerError();
+          }
+        } else if (gameState === 1) {
+          const currentE = bears.filter((b) => b.state === 2).length;
+          const targetE = (targetH * f2.n) / f2.d;
+
+          if (currentE === targetE) {
+            triggerConfetti(rect.x + rect.width / 2, rect.y);
+            gameState = 2;
+            updateUI();
+          } else {
+            triggerError();
+          }
+        } else if (gameState === 2) {
+          const numInput = document.getElementById("user-num").value;
+          const denInput = document.getElementById("user-den").value;
+
+          const num = parseInt(numInput);
+          const den = parseInt(denInput);
+
+          const targetE = (targetH * f2.n) / f2.d;
+          const targetRatio = targetE / totalBears;
+
+          if (
+            !isNaN(num) &&
+            !isNaN(den) &&
+            den !== 0 &&
+            Math.abs(num / den - targetRatio) < 0.001
+          ) {
+            triggerConfetti(window.innerWidth / 2, window.innerHeight / 2);
+            gameState = 3;
+            updateUI();
+          } else {
+            triggerError();
+          }
+        } else if (gameState === 3) {
+          initGame();
         }
+      }
 
-        function handleBearClick(index) {
-            if (gameState === 3) return; // Game over
-            
-            const bear = bears[index];
+      // --- Rendering & Effects ---
+      function renderBears() {
+        const board = document.getElementById("game-board");
+        board.innerHTML = "";
 
-            if (gameState === 0) {
-                // Toggle Honey (0 <-> 1)
-                bear.state = bear.state === 0 ? 1 : 0;
-            } else if (gameState === 1) {
-                // Toggle Eating (1 <-> 2) ONLY if bear has honey
-                if (bear.state > 0) {
-                    bear.state = bear.state === 1 ? 2 : 1;
-                }
+        for (let r = 0; r < rows; r++) {
+          const rowBears = bears.filter((b) => b.row === r);
+
+          const rowWrapper = document.createElement("div");
+          rowWrapper.className = "relative flex justify-center group";
+
+          // Platform
+          const platform = document.createElement("div");
+          platform.className =
+            "absolute bottom-0 w-[105%] h-12 bg-green-800 rounded-full border-b-8 border-green-950 shadow-2xl -z-10 group-hover:bg-green-700 transition-colors drop-shadow-[0_15px_15px_rgba(0,0,0,0.5)]";
+          rowWrapper.appendChild(platform);
+
+          // Bears container
+          const bearsContainer = document.createElement("div");
+          bearsContainer.className = "flex justify-center gap-2 sm:gap-6 px-4";
+
+          rowBears.forEach((bear) => {
+            const bearDiv = document.createElement("div");
+            bearDiv.className = `relative transition-transform duration-200 hover:-translate-y-2 ${gameState !== 2 && gameState !== 3 ? "cursor-pointer active:scale-90" : "cursor-default"}`;
+            bearDiv.onclick = () => handleBearClick(bear.id);
+
+            let html = `<div class="text-5xl sm:text-6xl filter drop-shadow-md z-10 relative animate-pop">🐻</div>`;
+
+            if (bear.state >= 1) {
+              html += `<div class="absolute -bottom-2 -right-2 text-3xl sm:text-4xl animate-pop z-20">🍯</div>`;
             }
-            renderBears();
+            if (bear.state === 2) {
+              html += `<div class="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl sm:text-3xl animate-pop z-30">✨</div>`;
+            }
+
+            bearDiv.innerHTML = html;
+            bearsContainer.appendChild(bearDiv);
+          });
+
+          rowWrapper.appendChild(bearsContainer);
+          board.appendChild(rowWrapper);
         }
+      }
 
-        function handleAction() {
-            const panel = document.getElementById('control-panel');
-            const rect = panel.getBoundingClientRect();
+      function updateUI() {
+        const iconContainer = document.getElementById("icon-container");
+        const instructionText = document.getElementById("instruction-text");
+        const actionBtn = document.getElementById("action-btn");
 
-            if (gameState === 0) {
-                const currentH = bears.filter(b => b.state >= 1).length;
-                if (currentH === targetH) {
-                    triggerConfetti(rect.x + rect.width / 2, rect.y);
-                    gameState = 1;
-                    updateUI();
-                } else {
-                    triggerError();
-                }
-            } 
-            else if (gameState === 1) {
-                const currentE = bears.filter(b => b.state === 2).length;
-                const targetE = (targetH * f2.n) / f2.d;
-                
-                if (currentE === targetE) {
-                    triggerConfetti(rect.x + rect.width / 2, rect.y);
-                    gameState = 2;
-                    updateUI();
-                } else {
-                    triggerError();
-                }
-            }
-            else if (gameState === 2) {
-                const numInput = document.getElementById('user-num').value;
-                const denInput = document.getElementById('user-den').value;
-                
-                const num = parseInt(numInput);
-                const den = parseInt(denInput);
-                
-                const targetE = (targetH * f2.n) / f2.d;
-                const targetRatio = targetE / totalBears;
-                
-                if (!isNaN(num) && !isNaN(den) && den !== 0 && Math.abs((num / den) - targetRatio) < 0.001) {
-                    triggerConfetti(window.innerWidth / 2, window.innerHeight / 2);
-                    gameState = 3;
-                    updateUI();
-                } else {
-                    triggerError();
-                }
-            }
-            else if (gameState === 3) {
-                initGame();
-            }
-        }
-
-        // --- Rendering & Effects ---
-        function renderBears() {
-            const board = document.getElementById('game-board');
-            board.innerHTML = '';
-
-            for (let r = 0; r < rows; r++) {
-                const rowBears = bears.filter(b => b.row === r);
-                
-                const rowWrapper = document.createElement('div');
-                rowWrapper.className = 'relative flex justify-center group';
-                
-                // Platform
-                const platform = document.createElement('div');
-                platform.className = 'absolute bottom-0 w-[110%] h-12 bg-green-800 rounded-[50%] border-b-8 border-green-950 shadow-xl -z-10 group-hover:bg-green-700 transition-colors';
-                rowWrapper.appendChild(platform);
-
-                // Bears container
-                const bearsContainer = document.createElement('div');
-                bearsContainer.className = 'flex justify-center gap-2 sm:gap-6 px-4';
-
-                rowBears.forEach(bear => {
-                    const bearDiv = document.createElement('div');
-                    bearDiv.className = `relative transition-transform duration-200 hover:-translate-y-2 ${gameState !== 2 && gameState !== 3 ? 'cursor-pointer active:scale-90' : 'cursor-default'}`;
-                    bearDiv.onclick = () => handleBearClick(bear.id);
-
-                    let html = `<div class="text-5xl sm:text-6xl filter drop-shadow-md z-10 relative animate-pop">🐻</div>`;
-                    
-                    if (bear.state >= 1) {
-                        html += `<div class="absolute -bottom-2 -right-2 text-3xl sm:text-4xl animate-pop z-20">🍯</div>`;
-                    }
-                    if (bear.state === 2) {
-                        html += `<div class="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl sm:text-3xl animate-pop z-30">✨</div>`;
-                    }
-                    
-                    bearDiv.innerHTML = html;
-                    bearsContainer.appendChild(bearDiv);
-                });
-
-                rowWrapper.appendChild(bearsContainer);
-                board.appendChild(rowWrapper);
-            }
-        }
-
-        function updateUI() {
-            const iconContainer = document.getElementById('icon-container');
-            const instructionText = document.getElementById('instruction-text');
-            const actionBtn = document.getElementById('action-btn');
-
-            if (gameState === 0) {
-                iconContainer.innerHTML = '📝';
-                instructionText.innerHTML = `Give honeypots to ${formatFraction(f1.n, f1.d)} of the <strong>${totalBears}</strong> bears by clicking them.`;
-                actionBtn.innerHTML = 'DONE';
-                setupActionButtonClasses(false);
-            } 
-            else if (gameState === 1) {
-                instructionText.innerHTML = `Now, make ${formatFraction(f2.n, f2.d)} of the <strong>${targetH}</strong> bears with honeypots eat their honey.`;
-            }
-            else if (gameState === 2) {
-                instructionText.innerHTML = `
+        if (gameState === 0) {
+          iconContainer.innerHTML = "📝";
+          instructionText.innerHTML = `Give honeypots to ${formatFraction(f1.n, f1.d)} of the <strong>${totalBears}</strong> bears by clicking them.`;
+          actionBtn.innerHTML = "DONE";
+          setupActionButtonClasses(false);
+        } else if (gameState === 1) {
+          instructionText.innerHTML = `Now, make ${formatFraction(f2.n, f2.d)} of the <strong>${targetH}</strong> bears with honeypots eat their honey.`;
+        } else if (gameState === 2) {
+          instructionText.innerHTML = `
                     What fraction of all <strong>${totalBears}</strong> bears have eaten honey? 
                     <div class="inline-flex flex-col items-center align-middle mx-3 gap-1 bg-green-50 p-2 rounded-lg border-2 border-green-200">
                         <input type="number" id="user-num" class="w-16 h-10 text-center font-bold text-xl border-2 border-green-300 rounded focus:outline-none focus:border-green-600">
@@ -276,64 +332,65 @@
                         <input type="number" id="user-den" class="w-16 h-10 text-center font-bold text-xl border-2 border-green-300 rounded focus:outline-none focus:border-green-600">
                     </div>
                 `;
-            }
-            else if (gameState === 3) {
-                iconContainer.innerHTML = '🎉';
-                instructionText.innerHTML = `<span class="text-green-600 font-bold">Amazing job! You solved it correctly! 🌟</span>`;
-                actionBtn.innerHTML = 'PLAY AGAIN';
-                setupActionButtonClasses(true);
-            }
+        } else if (gameState === 3) {
+          iconContainer.innerHTML = "🎉";
+          instructionText.innerHTML = `<span class="text-green-600 font-bold">Amazing job! You solved it correctly! 🌟</span>`;
+          actionBtn.innerHTML = "PLAY AGAIN";
+          setupActionButtonClasses(true);
         }
+      }
 
-        function setupActionButtonClasses(isCompleted) {
-            const btn = document.getElementById('action-btn');
-            if (isCompleted) {
-                btn.className = "bg-green-500 hover:bg-green-400 text-white px-8 py-4 rounded-2xl font-bold text-2xl shadow-[0_6px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[6px] transition-all animate-bounce cursor-pointer";
-            } else {
-                btn.className = "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-8 py-4 rounded-2xl font-bold text-2xl shadow-[0_6px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[6px] transition-all cursor-pointer";
+      function setupActionButtonClasses(isCompleted) {
+        const btn = document.getElementById("action-btn");
+        if (isCompleted) {
+          btn.className =
+            "bg-green-500 hover:bg-green-400 text-white px-8 py-4 rounded-2xl font-bold text-2xl shadow-[0_6px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[6px] transition-all animate-bounce cursor-pointer";
+        } else {
+          btn.className =
+            "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-8 py-4 rounded-2xl font-bold text-2xl shadow-[0_6px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[6px] transition-all cursor-pointer";
+        }
+      }
+
+      function triggerError() {
+        const panel = document.getElementById("control-panel");
+        panel.classList.add("animate-shake", "border-red-400");
+        panel.classList.remove("border-green-200");
+
+        setTimeout(() => {
+          panel.classList.remove("animate-shake", "border-red-400");
+          panel.classList.add("border-green-200");
+        }, 600);
+      }
+
+      function triggerConfetti(x, y) {
+        const container = document.getElementById("confetti-container");
+        const colors = ["#fde047", "#4ade80", "#60a5fa", "#f472b6", "#a78bfa"];
+
+        for (let i = 0; i < 30; i++) {
+          const confetti = document.createElement("div");
+          confetti.className = "confetti-piece text-2xl";
+          confetti.innerHTML = "✨";
+
+          const startX = x + (Math.random() * 100 - 50);
+          const color = colors[Math.floor(Math.random() * colors.length)];
+
+          confetti.style.left = startX + "px";
+          confetti.style.top = y + "px";
+          confetti.style.color = color;
+
+          container.appendChild(confetti);
+
+          // Cleanup after animation
+          setTimeout(() => {
+            if (container.contains(confetti)) {
+              container.removeChild(confetti);
             }
+          }, 1500);
         }
+      }
 
-        function triggerError() {
-            const panel = document.getElementById('control-panel');
-            panel.classList.add('animate-shake', 'border-red-400');
-            panel.classList.remove('border-green-200');
-            
-            setTimeout(() => {
-                panel.classList.remove('animate-shake', 'border-red-400');
-                panel.classList.add('border-green-200');
-            }, 600);
-        }
-
-        function triggerConfetti(x, y) {
-            const container = document.getElementById('confetti-container');
-            const colors = ['#fde047', '#4ade80', '#60a5fa', '#f472b6', '#a78bfa'];
-            
-            for (let i = 0; i < 30; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti-piece text-2xl';
-                confetti.innerHTML = '✨';
-                
-                const startX = x + (Math.random() * 100 - 50);
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                
-                confetti.style.left = startX + 'px';
-                confetti.style.top = y + 'px';
-                confetti.style.color = color;
-                
-                container.appendChild(confetti);
-                
-                // Cleanup after animation
-                setTimeout(() => {
-                    if(container.contains(confetti)) {
-                        container.removeChild(confetti);
-                    }
-                }, 1500);
-            }
-        }
-
-        // Start game on load
-        window.onload = initGame;
+      // Start game on load
+      window.onload = initGame;
     </script>
-</body>
+  </body>
 </html>
