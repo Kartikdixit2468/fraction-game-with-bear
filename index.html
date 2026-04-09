@@ -109,35 +109,75 @@
 
     <!-- Main Layout -->
     <div
-      class="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-3 lg:gap-4 px-3 md:px-5 py-3 md:py-4 overflow-visible"
+      class="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-2 lg:gap-3 px-2.5 md:px-4 py-2 md:py-3 overflow-visible"
     >
       <!-- Top Split: Left Pie / Right Bears -->
       <div
-        class="flex-1 min-h-0 w-full flex flex-col lg:flex-row gap-3 lg:gap-4"
+        class="flex-1 min-h-0 w-full flex flex-col lg:flex-row gap-2 lg:gap-3"
       >
         <!-- LEFT SIDE: Pie Chart (no container card) -->
         <div
           id="pie-panel"
-          class="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col items-center justify-center gap-4 py-1"
+          class="w-full lg:w-[320px] xl:w-[350px] shrink-0 flex flex-col items-center justify-center gap-3 py-0.5"
         >
-          <div class="relative">
+          <div
+            class="w-[92%] flex items-center justify-center gap-3 text-xs sm:text-sm font-semibold"
+          >
+            <span id="chart-mode-pie-label" class="text-green-900">Pie</span>
+            <button
+              id="chart-mode-toggle"
+              onclick="toggleChartMode()"
+              class="relative w-14 h-8 rounded-full bg-slate-300 transition-colors duration-300"
+              aria-label="Toggle chart representation"
+            >
+              <span
+                id="chart-mode-thumb"
+                class="absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300"
+              ></span>
+            </button>
+            <span id="chart-mode-rect-label" class="text-green-500"
+              >Rectangle</span
+            >
+          </div>
+
+          <div id="pie-chart-wrap" class="relative">
             <div
               id="pie-chart"
-              class="w-56 h-56 sm:w-64 sm:h-64 md:w-[16rem] md:h-[16rem] rounded-full border-[6px] border-white pie-shadow pie-initial-bg transition-all duration-700 ease-out"
+              class="w-48 h-48 sm:w-56 sm:h-56 md:w-[14rem] md:h-[14rem] rounded-full border-[6px] border-white pie-shadow pie-initial-bg transition-all duration-700 ease-out"
             ></div>
             <div
-              class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full pie-shadow flex items-center justify-center"
+              class="absolute inset-0 m-auto w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-full pie-shadow flex items-center justify-center"
             >
-              <span class="text-2xl sm:text-3xl">🐻</span>
+              <span class="text-xl sm:text-2xl">🐻</span>
+            </div>
+          </div>
+
+          <div id="rect-chart-wrap" class="hidden w-56 sm:w-64 md:w-[16rem]">
+            <div
+              id="rect-chart"
+              class="h-8 sm:h-9 md:h-10 rounded-full border-[3px] border-white pie-shadow bg-gray-200 overflow-hidden flex"
+            >
+              <div
+                id="rect-seg-green"
+                class="h-full w-0 bg-green-400 transition-all duration-700 ease-out"
+              ></div>
+              <div
+                id="rect-seg-yellow"
+                class="h-full w-0 bg-yellow-300 transition-all duration-700 ease-out"
+              ></div>
+              <div
+                id="rect-seg-gray"
+                class="h-full w-full bg-gray-300 transition-all duration-700 ease-out"
+              ></div>
             </div>
           </div>
 
           <div
             id="pie-indicators"
-            class="w-[92%] flex flex-col gap-2 text-sm sm:text-base font-semibold text-green-900"
+            class="w-[92%] flex flex-col gap-1.5 text-xs sm:text-sm font-semibold text-green-900"
           >
             <div
-              class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1.5"
+              class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1"
             >
               <span
                 class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500 shrink-0"
@@ -145,7 +185,7 @@
               <span>Yellow = Bears With Honey</span>
             </div>
             <div
-              class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-1.5"
+              class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-1"
             >
               <span
                 class="w-3 h-3 rounded-full bg-green-400 border border-green-500 shrink-0"
@@ -154,22 +194,6 @@
             </div>
           </div>
 
-          <!-- Final Equation Reveal (Hidden until end) -->
-          <div
-            id="final-equation"
-            class="hidden w-[92%] flex-col items-center gap-2 bg-green-100 border-2 border-green-300 p-3 rounded-xl animate-pop"
-          >
-            <span
-              class="text-green-800 text-xs sm:text-sm font-bold text-center"
-              >Fraction Multiplication!</span
-            >
-            <div
-              id="equation-content"
-              class="flex items-center justify-center gap-2 md:gap-3 bg-white px-4 py-2 rounded-lg shadow-sm w-full"
-            >
-              <!-- Equation injected here -->
-            </div>
-          </div>
         </div>
 
         <!-- RIGHT SIDE: Game Board (no container card) -->
@@ -189,32 +213,49 @@
       <!-- Bottom Instruction & Action Panel -->
       <div
         id="control-panel"
-        class="w-[60%] md:w-[75%] max-w-5xl mx-auto bg-white rounded-2xl p-3 md:p-4 shadow-xl border-4 border-green-200 flex flex-col md:flex-row items-center gap-3 md:gap-4 justify-between transition-colors shrink-0"
+        class="w-[60%] md:w-[75%] max-w-5xl mx-auto bg-white rounded-2xl p-2.5 md:p-3 shadow-xl border-4 border-green-200 flex flex-col gap-2 transition-colors shrink-0"
       >
-        <div
-          class="flex-1 flex items-center gap-2.5 md:gap-3 text-sm sm:text-base md:text-lg text-green-900 font-medium w-full"
-        >
+        <div class="w-full flex flex-col md:flex-row items-center gap-2 md:gap-3 justify-between">
           <div
-            id="icon-container"
-            class="bg-yellow-100 p-2 rounded-full shrink-0 text-lg"
+            class="flex-1 flex items-center gap-2 md:gap-2.5 text-xs sm:text-sm md:text-base text-green-900 font-medium w-full"
           >
-            📝
+            <div
+              id="icon-container"
+              class="bg-yellow-100 p-1.5 rounded-full shrink-0 text-base"
+            >
+              📝
+            </div>
+            <div
+              id="instruction-text"
+              class="flex-1 flex items-center flex-wrap leading-snug"
+            >
+              <!-- Instructions injected here -->
+            </div>
           </div>
-          <div
-            id="instruction-text"
-            class="flex-1 flex items-center flex-wrap leading-snug"
+
+          <button
+            id="action-btn"
+            onclick="handleAction()"
+            class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-4 sm:px-5 py-2 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap"
           >
-            <!-- Instructions injected here -->
-          </div>
+            DONE
+          </button>
         </div>
 
-        <button
-          id="action-btn"
-          onclick="handleAction()"
-          class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap"
+        <div
+          id="final-equation"
+          class="w-full flex flex-col gap-1 bg-green-100 border-2 border-green-300 p-2 md:p-2.5 rounded-xl"
         >
-          DONE
-        </button>
+          <span class="text-green-800 text-xs sm:text-sm font-bold"
+            >Fraction Multiplication!</span
+          >
+          <div
+            id="equation-content"
+            class="flex items-center gap-1 md:gap-2 bg-white px-2.5 md:px-3 py-1.5 rounded-lg shadow-sm w-full overflow-x-auto"
+          >
+            <!-- Equation injected here -->
+          </div>
+        </div>
       </div>
     </div>
 
@@ -230,6 +271,8 @@
       let targetH = 0;
       let finalNum = 0;
       let finalDen = 0;
+      let chartMode = "pie";
+      let currentVisualMetrics = { bearSize: 56, honeySize: 24, sparkleSize: 20 };
 
       // --- Math Helpers ---
       const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
@@ -254,11 +297,100 @@
 
       // --- UI Formatters ---
       const formatFraction = (n, d) => `
-          <span class="inline-flex flex-col items-center justify-center align-middle mx-1.5 text-base sm:text-lg font-bold text-green-900">
+          <span class="inline-flex flex-col items-center justify-center align-middle mx-1 text-sm sm:text-base font-bold text-green-900">
             <span class="border-b-[2px] border-green-900 leading-none px-1 pb-[1px]">${n}</span>
             <span class="leading-none px-1 pt-[2px]">${d}</span>
           </span>
       `;
+
+      function getBearHtml(bear, metrics, animateEffects = false) {
+        const effectClass = animateEffects ? " animate-pop" : "";
+
+        let html = `<div class="filter drop-shadow-md z-10 relative leading-none" style="font-size:${metrics.bearSize}px;">🐻</div>`;
+
+        if (bear.state >= 1) {
+          html += `<div class="absolute -bottom-1 -right-1 z-20${effectClass}" style="font-size:${metrics.honeySize}px;">🍯</div>`;
+        }
+        if (bear.state === 2) {
+          html += `<div class="absolute -top-3 left-1/2 -translate-x-1/2 z-30${effectClass}" style="font-size:${metrics.sparkleSize}px;">✨</div>`;
+        }
+
+        return html;
+      }
+
+      function setChartMode(mode) {
+        chartMode = mode === "rect" ? "rect" : "pie";
+
+        const pieWrap = document.getElementById("pie-chart-wrap");
+        const rectWrap = document.getElementById("rect-chart-wrap");
+        const toggle = document.getElementById("chart-mode-toggle");
+        const thumb = document.getElementById("chart-mode-thumb");
+        const pieLabel = document.getElementById("chart-mode-pie-label");
+        const rectLabel = document.getElementById("chart-mode-rect-label");
+
+        const rectActive = chartMode === "rect";
+
+        pieWrap.classList.toggle("hidden", rectActive);
+        rectWrap.classList.toggle("hidden", !rectActive);
+
+        toggle.classList.toggle("bg-slate-300", !rectActive);
+        toggle.classList.toggle("bg-green-600", rectActive);
+        thumb.style.transform = rectActive ? "translateX(24px)" : "translateX(0px)";
+
+        pieLabel.classList.toggle("text-green-900", !rectActive);
+        pieLabel.classList.toggle("text-green-500", rectActive);
+        rectLabel.classList.toggle("text-green-900", rectActive);
+        rectLabel.classList.toggle("text-green-500", !rectActive);
+      }
+
+      function toggleChartMode() {
+        setChartMode(chartMode === "pie" ? "rect" : "pie");
+      }
+
+      function updateBearVisual(index, animateEffects = true) {
+        const bearDiv = document.querySelector(`[data-bear-id="${index}"]`);
+        if (!bearDiv) {
+          renderBears();
+          return;
+        }
+        bearDiv.innerHTML = getBearHtml(bears[index], currentVisualMetrics, animateEffects);
+      }
+
+      function updateEquationDisplay(showResult = false) {
+        const eqContent = document.getElementById("equation-content");
+        if (!eqContent) return;
+
+        if (!showResult) {
+          eqContent.innerHTML = `
+            ${formatFraction(f1.n, f1.d)}
+            <span class="text-green-800 font-black text-base md:text-lg">×</span>
+            ${formatFraction(f2.n, f2.d)}
+            <span class="text-green-800 font-black text-base md:text-lg">=</span>
+            <span class="text-green-700 font-bold text-base md:text-lg px-1">?</span>
+          `;
+          return;
+        }
+
+        const divisor = gcd(finalNum, finalDen);
+        let eqHtml = `
+          ${formatFraction(f1.n, f1.d)}
+          <span class="text-green-800 font-black text-base md:text-lg">×</span>
+          ${formatFraction(f2.n, f2.d)}
+          <span class="text-green-800 font-black text-base md:text-lg">=</span>
+          ${formatFraction(finalNum, finalDen)}
+        `;
+
+        if (divisor > 1) {
+          const simpNum = finalNum / divisor;
+          const simpDen = finalDen / divisor;
+          eqHtml += `
+            <span class="text-green-700 font-semibold text-sm md:text-base mx-1 sm:mx-2 whitespace-nowrap">which is same as</span>
+            ${formatFraction(simpNum, simpDen)}
+          `;
+        }
+
+        eqContent.innerHTML = eqHtml;
+      }
 
       // --- Core Game Logic ---
       function initGame() {
@@ -276,7 +408,7 @@
         }));
 
         gameState = 0;
-        document.getElementById("final-equation").classList.add("hidden");
+        setChartMode(chartMode);
         updateUI();
         renderBears();
         updateChart(); // Initial chart render
@@ -286,16 +418,22 @@
         if (gameState === 3) return;
 
         const bear = bears[index];
+        let didUpdate = false;
 
         if (gameState === 0) {
           bear.state = bear.state === 0 ? 1 : 0;
+          didUpdate = true;
         } else if (gameState === 1) {
           if (bear.state > 0) {
             bear.state = bear.state === 1 ? 2 : 1;
+            didUpdate = true;
           }
         }
-        renderBears();
-        updateChart(); // Live update pie chart!
+
+        if (didUpdate) {
+          updateBearVisual(index, true);
+          updateChart(); // Live update pie chart!
+        }
       }
 
       function handleAction() {
@@ -307,6 +445,7 @@
             triggerConfetti();
             gameState = 1;
             updateUI();
+            renderBears();
           } else {
             triggerError();
           }
@@ -317,6 +456,7 @@
             triggerConfetti();
             gameState = 2;
             updateUI();
+            renderBears();
           } else {
             triggerError();
           }
@@ -339,6 +479,7 @@
             triggerConfetti();
             gameState = 3;
             updateUI();
+            renderBears();
           } else {
             triggerError();
           }
@@ -349,7 +490,10 @@
 
       // --- Live Chart Logic ---
       function updateChart() {
-        const chart = document.getElementById("pie-chart");
+        const pieChart = document.getElementById("pie-chart");
+        const rectSegGreen = document.getElementById("rect-seg-green");
+        const rectSegYellow = document.getElementById("rect-seg-yellow");
+        const rectSegGray = document.getElementById("rect-seg-gray");
 
         const currentH = bears.filter((b) => b.state >= 1).length;
         const currentE = bears.filter((b) => b.state === 2).length;
@@ -358,11 +502,18 @@
         const pGreen = (currentE / totalBears) * 100;
         const pYellow = (currentH / totalBears) * 100;
 
-        chart.style.background = `conic-gradient(
+        pieChart.style.background = `conic-gradient(
             #4ade80 0% ${pGreen}%, 
             #fde047 ${pGreen}% ${pYellow}%, 
             #e5e7eb ${pYellow}% 100%
         )`;
+
+        const yellowOnly = Math.max(0, pYellow - pGreen);
+        const grayPart = Math.max(0, 100 - pYellow);
+
+        rectSegGreen.style.width = `${pGreen}%`;
+        rectSegYellow.style.width = `${yellowOnly}%`;
+        rectSegGray.style.width = `${grayPart}%`;
       }
 
       // --- Rendering & Effects ---
@@ -370,6 +521,10 @@
         const board = document.getElementById("game-board");
         const boardContainer = document.getElementById("game-board-container");
         board.innerHTML = "";
+
+        const boardHeight = Math.max(280, Math.floor(boardContainer.clientHeight));
+        const rowGap = Math.max(5, Math.min(10, Math.floor(boardHeight * 0.02)));
+        board.style.gap = `${rowGap}px`;
 
         const boardWidth = Math.max(
           340,
@@ -381,15 +536,16 @@
           3,
           Math.min(9, Math.floor(usableWidth * 0.009)),
         );
-        const baseBearSize = Math.floor(
-          (usableWidth - gapSize * (cols - 1)) / cols,
-        );
+        const baseByWidth = Math.floor((usableWidth - gapSize * (cols - 1)) / cols);
+        const baseByHeight = Math.floor((boardHeight - rowGap * (rows - 1)) / rows);
+        const baseBearSize = Math.min(baseByWidth, Math.floor(baseByHeight * 0.92));
         const bearSize = Math.max(
-          38,
-          Math.min(66, Math.floor(baseBearSize * 0.92)),
+          34,
+          Math.min(60, Math.floor(baseBearSize * 0.9)),
         );
         const honeySize = Math.max(18, Math.floor(bearSize * 0.48));
         const sparkleSize = Math.max(16, Math.floor(bearSize * 0.34));
+        currentVisualMetrics = { bearSize, honeySize, sparkleSize };
         const platformHeight = Math.max(
           24,
           Math.min(34, Math.floor(bearSize * 0.34)),
@@ -435,19 +591,19 @@
 
           rowBears.forEach((bear) => {
             const bearDiv = document.createElement("div");
-            bearDiv.className = `relative transition-transform duration-200 hover:-translate-y-2 ${gameState !== 2 && gameState !== 3 ? "cursor-pointer active:scale-90" : "cursor-default"}`;
-            bearDiv.onclick = () => handleBearClick(bear.id);
+            const inactiveDuringStep2 = gameState === 1 && bear.state === 0;
+            const inactiveDuringStep3 = gameState === 2 && bear.state === 1;
+            const canInteract = gameState === 0 || (gameState === 1 && bear.state > 0);
 
-            let html = `<div class="filter drop-shadow-md z-10 relative animate-pop leading-none" style="font-size:${bearSize}px;">🐻</div>`;
+            bearDiv.className = `relative transition-all duration-200 ${canInteract ? "hover:-translate-y-2 cursor-pointer active:scale-90" : "cursor-default"}`;
+            bearDiv.style.opacity = inactiveDuringStep2 || inactiveDuringStep3 ? "0.5" : "1";
 
-            if (bear.state >= 1) {
-              html += `<div class="absolute -bottom-1 -right-1 animate-pop z-20" style="font-size:${honeySize}px;">🍯</div>`;
+            if (canInteract) {
+              bearDiv.onclick = () => handleBearClick(bear.id);
             }
-            if (bear.state === 2) {
-              html += `<div class="absolute -top-3 left-1/2 -translate-x-1/2 animate-pop z-30" style="font-size:${sparkleSize}px;">✨</div>`;
-            }
 
-            bearDiv.innerHTML = html;
+            bearDiv.dataset.bearId = bear.id.toString();
+            bearDiv.innerHTML = getBearHtml(bear, currentVisualMetrics, false);
             bearsContainer.appendChild(bearDiv);
           });
 
@@ -466,16 +622,16 @@
         const iconContainer = document.getElementById("icon-container");
         const instructionText = document.getElementById("instruction-text");
         const actionBtn = document.getElementById("action-btn");
-        const eqContainer = document.getElementById("final-equation");
-        const eqContent = document.getElementById("equation-content");
 
         if (gameState === 0) {
           iconContainer.innerHTML = "📝";
           instructionText.innerHTML = `Give honeypots to ${formatFraction(f1.n, f1.d)} of the <strong>${totalBears}</strong>   bears by clicking them.`;
+          updateEquationDisplay(false);
           actionBtn.innerHTML = "DONE";
           setupActionButtonClasses(false);
         } else if (gameState === 1) {
           instructionText.innerHTML = `Now, make ${formatFraction(f2.n, f2.d)} of the <strong>${targetH}</strong> bears with honeypots eat their honey.`;
+          updateEquationDisplay(false);
         } else if (gameState === 2) {
           instructionText.innerHTML = `
             What fraction of all <strong>${totalBears}</strong> bears have eaten honey? 
@@ -485,18 +641,11 @@
               <input type="number" id="user-den" class="w-11 h-7 text-center font-bold text-sm border-2 border-green-300 rounded focus:outline-none focus:border-green-600 bg-white">
             </div>
           `;
+          updateEquationDisplay(false);
         } else if (gameState === 3) {
           iconContainer.innerHTML = "🎉";
           instructionText.innerHTML = `<span class="text-green-700 font-bold">Amazing job! You solved it correctly! 🌟</span>`;
-
-          eqContainer.classList.remove("hidden");
-          eqContent.innerHTML = `
-            ${formatFraction(f1.n, f1.d)}
-            <span class="text-green-800 font-black text-base md:text-lg">×</span>
-            ${formatFraction(f2.n, f2.d)}
-            <span class="text-green-800 font-black text-base md:text-lg">=</span>
-            ${formatFraction(finalNum, finalDen)}
-          `;
+          updateEquationDisplay(true);
 
           actionBtn.innerHTML = "PLAY AGAIN";
           setupActionButtonClasses(true);
@@ -507,10 +656,10 @@
         const btn = document.getElementById("action-btn");
         if (isCompleted) {
           btn.className =
-            "bg-green-500 hover:bg-green-400 text-white px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[4px] transition-all animate-bounce cursor-pointer whitespace-nowrap";
+            "bg-green-500 hover:bg-green-400 text-white px-4 sm:px-5 py-2 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[4px] transition-all animate-bounce cursor-pointer whitespace-nowrap";
         } else {
           btn.className =
-            "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap";
+            "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-4 sm:px-5 py-2 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap";
         }
       }
 
