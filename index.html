@@ -163,10 +163,10 @@
 
           <div
             id="pie-indicators"
-            class="hidden w-[92%] flex flex-col gap-1.5 text-xs sm:text-sm font-semibold text-green-900"
+            class="hidden w-[92%] flex flex-row flex-wrap items-stretch gap-1.5 text-xs sm:text-sm font-semibold text-green-900"
           >
             <div
-              class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1"
+              class="flex-1 min-w-[145px] flex items-center justify-start gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1"
             >
               <span
                 class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500 shrink-0"
@@ -174,7 +174,7 @@
               <span>Yellow = Bears With Honey</span>
             </div>
             <div
-              class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-1"
+              class="flex-1 min-w-[145px] flex items-center justify-start gap-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-1"
             >
               <span
                 class="w-3 h-3 rounded-full bg-green-400 border border-green-500 shrink-0"
@@ -185,10 +185,10 @@
 
           <div
             id="grid-indicators"
-            class="w-[92%] flex flex-col gap-1.5 text-xs sm:text-sm font-semibold text-green-900"
+            class="w-full grid grid-cols-3 gap-1.5 text-[10px] sm:text-[11px] font-semibold text-green-900"
           >
             <div
-              class="flex items-center gap-2 bg-slate-50/90 border border-slate-200 rounded-lg px-2.5 py-1"
+              class="w-full min-w-0 flex items-center justify-center gap-1.5 bg-slate-50/90 border border-slate-200 rounded-lg px-1.5 py-1 text-center leading-tight"
             >
               <span
                 class="w-3 h-3 rounded bg-slate-200 border border-slate-400 shrink-0"
@@ -196,7 +196,7 @@
               <span>Empty Platform</span>
             </div>
             <div
-              class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-2.5 py-1"
+              class="w-full min-w-0 flex items-center justify-center gap-1.5 bg-yellow-50/90 border border-yellow-200 rounded-lg px-1.5 py-1 text-center leading-tight"
             >
               <span
                 class="w-3 h-3 rounded bg-yellow-300 border border-yellow-500 shrink-0"
@@ -204,7 +204,7 @@
               <span>Selected (Honey)</span>
             </div>
             <div
-              class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-2.5 py-1"
+              class="w-full min-w-0 flex items-center justify-center gap-1.5 bg-green-50/90 border border-green-200 rounded-lg px-1.5 py-1 text-center leading-tight"
             >
               <span
                 class="w-3 h-3 rounded bg-green-500 border border-green-700 shrink-0"
@@ -246,7 +246,7 @@
             </div>
             <div
               id="instruction-text"
-              class="flex-1 flex items-center flex-wrap leading-snug"
+              class="flex-1 leading-snug"
             >
               <!-- Instructions injected here -->
             </div>
@@ -540,10 +540,24 @@
         const pGreen = (currentE / totalBears) * 100;
         const pYellow = (currentH / totalBears) * 100;
 
+        // Segment borders are rendered via thin white separator wedges,
+        // so the colored regions have clear boundaries without overlay lines.
+        const sep = 0.8;
+        const startBorderEnd = pGreen > 0 ? Math.min(sep, pGreen) : 0;
+        const greenStart = startBorderEnd;
+        const greenEnd = Math.max(greenStart, pGreen);
+        const split1End = Math.min(100, pGreen + sep);
+        const yellowStart = Math.max(split1End, pGreen);
+        const yellowEnd = Math.max(yellowStart, pYellow);
+        const split2End = Math.min(100, pYellow + sep);
+
         pieChart.style.background = `conic-gradient(
-            #4ade80 0% ${pGreen}%, 
-            #fde047 ${pGreen}% ${pYellow}%, 
-            #e5e7eb ${pYellow}% 100%
+          rgba(255,255,255,0.95) 0% ${startBorderEnd}%,
+          #4ade80 ${greenStart}% ${greenEnd}%,
+          rgba(255,255,255,0.95) ${greenEnd}% ${split1End}%,
+          #fde047 ${yellowStart}% ${yellowEnd}%,
+          rgba(255,255,255,0.95) ${yellowEnd}% ${split2End}%,
+          #e5e7eb ${split2End}% 100%
         )`;
 
           // Grid blocks are count-based (sequential), not tied to specific bear positions.
@@ -562,19 +576,23 @@
                 "from-green-400",
                 "to-green-500",
                 "border-green-700",
-                "-translate-y-1",
-                "shadow-md",
+                "-translate-y-[4px]",
+                "shadow-lg",
               );
+              block.style.boxShadow =
+                "0 2px 0 #fde047, 0 4px 0 #ffffff, 0 7px 0 #d1d5db, 0 11px 13px rgba(0,0,0,0.20)";
             } else if (i < currentH) {
               // Next blocks up to currentH = honey only (yellow)
               block.classList.add(
                 "bg-gradient-to-b",
                 "from-yellow-300",
                 "to-yellow-400",
-                "border-yellow-600",
-                "-translate-y-1",
+                "border-yellow-500",
+                "-translate-y-[2px]",
                 "shadow-md",
               );
+              block.style.boxShadow =
+                "0 2px 0 #ffffff, 0 4px 0 #e2e8f0, 0 7px 0 #cbd5e1, 0 11px 13px rgba(0,0,0,0.17)";
             } else {
               // Remaining blocks = empty
               block.classList.add(
@@ -583,6 +601,7 @@
                 "to-slate-200",
                 "border-slate-300",
               );
+              block.style.boxShadow = "0 2px 5px rgba(0,0,0,0.08)";
             }
         }
       }
@@ -696,16 +715,16 @@
 
         if (gameState === 0) {
           iconContainer.innerHTML = "📝";
-          instructionText.innerHTML = `Give honeypots to ${formatFraction(f1.n, f1.d)} of the <strong>${totalBears}</strong>   bears by clicking them.`;
+          instructionText.innerHTML = `Give honeypots to ${formatFraction(f1.n, f1.d)} of the&nbsp;<strong>${totalBears}</strong>&nbsp;bears by clicking them.`;
           updateEquationDisplay(false);
           actionBtn.innerHTML = "DONE";
           setupActionButtonClasses(false);
         } else if (gameState === 1) {
-          instructionText.innerHTML = `Now, make ${formatFraction(f2.n, f2.d)} of the <strong>${targetH}</strong> bears with honeypots eat their honey.`;
+          instructionText.innerHTML = `Now, make ${formatFraction(f2.n, f2.d)} of the&nbsp;<strong>${targetH}</strong>&nbsp;bears with honeypots eat their honey.`;
           updateEquationDisplay(false);
         } else if (gameState === 2) {
           instructionText.innerHTML = `
-            What fraction of all <strong>${totalBears}</strong> bears have eaten honey? 
+            What fraction of all&nbsp;<strong>${totalBears}</strong>&nbsp;bears have eaten honey?
             <div class="inline-flex flex-col items-center align-middle mx-2 gap-1 bg-green-50 p-1 rounded-lg border-2 border-green-200 mt-1 sm:mt-0">
               <input type="number" id="user-num" class="w-11 h-7 text-center font-bold text-sm border-2 border-green-300 rounded focus:outline-none focus:border-green-600 bg-white">
               <div class="w-11 h-[3px] bg-green-800 rounded-full"></div>
