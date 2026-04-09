@@ -135,12 +135,12 @@
                 class="absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300"
               ></span>
             </button>
-            <span id="chart-mode-rect-label" class="text-green-500"
-              >Rectangle</span
+            <span id="chart-mode-grid-label" class="text-green-500"
+              >Grid</span
             >
           </div>
 
-          <div id="pie-chart-wrap" class="relative">
+          <div id="pie-chart-wrap" class="relative hidden">
             <div
               id="pie-chart"
               class="w-48 h-48 sm:w-56 sm:h-56 md:w-[14rem] md:h-[14rem] rounded-full border-[6px] border-white pie-shadow pie-initial-bg transition-all duration-700 ease-out"
@@ -152,29 +152,18 @@
             </div>
           </div>
 
-          <div id="rect-chart-wrap" class="hidden w-56 sm:w-64 md:w-[16rem]">
-            <div
-              id="rect-chart"
-              class="h-8 sm:h-9 md:h-10 rounded-full border-[3px] border-white pie-shadow bg-gray-200 overflow-hidden flex"
-            >
-              <div
-                id="rect-seg-green"
-                class="h-full w-0 bg-green-400 transition-all duration-700 ease-out"
-              ></div>
-              <div
-                id="rect-seg-yellow"
-                class="h-full w-0 bg-yellow-300 transition-all duration-700 ease-out"
-              ></div>
-              <div
-                id="rect-seg-gray"
-                class="h-full w-full bg-gray-300 transition-all duration-700 ease-out"
-              ></div>
+          <div
+            id="grid-chart-wrap"
+            class="w-48 h-48 sm:w-56 sm:h-56 md:w-[14rem] md:h-[14rem]"
+          >
+            <div id="block-grid" class="w-full h-full grid gap-1 sm:gap-1.5">
+              <!-- Blocks injected dynamically -->
             </div>
           </div>
 
           <div
             id="pie-indicators"
-            class="w-[92%] flex flex-col gap-1.5 text-xs sm:text-sm font-semibold text-green-900"
+            class="hidden w-[92%] flex flex-col gap-1.5 text-xs sm:text-sm font-semibold text-green-900"
           >
             <div
               class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1"
@@ -191,6 +180,36 @@
                 class="w-3 h-3 rounded-full bg-green-400 border border-green-500 shrink-0"
               ></span>
               <span>Green = Bears That Ate Honey</span>
+            </div>
+          </div>
+
+          <div
+            id="grid-indicators"
+            class="w-[92%] flex flex-col gap-1.5 text-xs sm:text-sm font-semibold text-green-900"
+          >
+            <div
+              class="flex items-center gap-2 bg-slate-50/90 border border-slate-200 rounded-lg px-2.5 py-1"
+            >
+              <span
+                class="w-3 h-3 rounded bg-slate-200 border border-slate-400 shrink-0"
+              ></span>
+              <span>Empty Platform</span>
+            </div>
+            <div
+              class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-2.5 py-1"
+            >
+              <span
+                class="w-3 h-3 rounded bg-yellow-300 border border-yellow-500 shrink-0"
+              ></span>
+              <span>Selected (Honey)</span>
+            </div>
+            <div
+              class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-2.5 py-1"
+            >
+              <span
+                class="w-3 h-3 rounded bg-green-500 border border-green-700 shrink-0"
+              ></span>
+              <span>Overlap (Eaten)</span>
             </div>
           </div>
 
@@ -271,7 +290,7 @@
       let targetH = 0;
       let finalNum = 0;
       let finalDen = 0;
-      let chartMode = "pie";
+      let chartMode = "grid";
       let currentVisualMetrics = { bearSize: 56, honeySize: 24, sparkleSize: 20 };
 
       // --- Math Helpers ---
@@ -319,32 +338,53 @@
       }
 
       function setChartMode(mode) {
-        chartMode = mode === "rect" ? "rect" : "pie";
+        chartMode = mode === "grid" ? "grid" : "pie";
 
         const pieWrap = document.getElementById("pie-chart-wrap");
-        const rectWrap = document.getElementById("rect-chart-wrap");
+        const gridWrap = document.getElementById("grid-chart-wrap");
+        const pieIndicators = document.getElementById("pie-indicators");
+        const gridIndicators = document.getElementById("grid-indicators");
         const toggle = document.getElementById("chart-mode-toggle");
         const thumb = document.getElementById("chart-mode-thumb");
         const pieLabel = document.getElementById("chart-mode-pie-label");
-        const rectLabel = document.getElementById("chart-mode-rect-label");
+        const gridLabel = document.getElementById("chart-mode-grid-label");
 
-        const rectActive = chartMode === "rect";
+        const gridActive = chartMode === "grid";
 
-        pieWrap.classList.toggle("hidden", rectActive);
-        rectWrap.classList.toggle("hidden", !rectActive);
+        pieWrap.classList.toggle("hidden", gridActive);
+        gridWrap.classList.toggle("hidden", !gridActive);
+        pieIndicators.classList.toggle("hidden", gridActive);
+        gridIndicators.classList.toggle("hidden", !gridActive);
 
-        toggle.classList.toggle("bg-slate-300", !rectActive);
-        toggle.classList.toggle("bg-green-600", rectActive);
-        thumb.style.transform = rectActive ? "translateX(24px)" : "translateX(0px)";
+        toggle.classList.toggle("bg-slate-300", !gridActive);
+        toggle.classList.toggle("bg-green-600", gridActive);
+        thumb.style.transform = gridActive ? "translateX(24px)" : "translateX(0px)";
 
-        pieLabel.classList.toggle("text-green-900", !rectActive);
-        pieLabel.classList.toggle("text-green-500", rectActive);
-        rectLabel.classList.toggle("text-green-900", rectActive);
-        rectLabel.classList.toggle("text-green-500", !rectActive);
+        pieLabel.classList.toggle("text-green-900", !gridActive);
+        pieLabel.classList.toggle("text-green-500", gridActive);
+        gridLabel.classList.toggle("text-green-900", gridActive);
+        gridLabel.classList.toggle("text-green-500", !gridActive);
       }
 
       function toggleChartMode() {
-        setChartMode(chartMode === "pie" ? "rect" : "pie");
+        setChartMode(chartMode === "pie" ? "grid" : "pie");
+      }
+
+      function drawGridLines() {
+        const blockGrid = document.getElementById("block-grid");
+        if (!blockGrid) return;
+
+        blockGrid.innerHTML = "";
+        blockGrid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+        blockGrid.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
+
+        for (let i = 0; i < totalBears; i++) {
+          const cell = document.createElement("div");
+          cell.id = `grid-block-${i}`;
+          cell.className =
+            "w-full h-full rounded-md sm:rounded-lg border-b-[3px] sm:border-b-[4px] shadow-sm transition-all duration-300 bg-gradient-to-b from-slate-100 to-slate-200 border-slate-300";
+          blockGrid.appendChild(cell);
+        }
       }
 
       function updateBearVisual(index, animateEffects = true) {
@@ -408,6 +448,7 @@
         }));
 
         gameState = 0;
+        drawGridLines();
         setChartMode(chartMode);
         updateUI();
         renderBears();
@@ -491,9 +532,6 @@
       // --- Live Chart Logic ---
       function updateChart() {
         const pieChart = document.getElementById("pie-chart");
-        const rectSegGreen = document.getElementById("rect-seg-green");
-        const rectSegYellow = document.getElementById("rect-seg-yellow");
-        const rectSegGray = document.getElementById("rect-seg-gray");
 
         const currentH = bears.filter((b) => b.state >= 1).length;
         const currentE = bears.filter((b) => b.state === 2).length;
@@ -508,12 +546,41 @@
             #e5e7eb ${pYellow}% 100%
         )`;
 
-        const yellowOnly = Math.max(0, pYellow - pGreen);
-        const grayPart = Math.max(0, 100 - pYellow);
+        for (let i = 0; i < totalBears; i++) {
+          const block = document.getElementById(`grid-block-${i}`);
+          if (!block) continue;
 
-        rectSegGreen.style.width = `${pGreen}%`;
-        rectSegYellow.style.width = `${yellowOnly}%`;
-        rectSegGray.style.width = `${grayPart}%`;
+          const state = bears[i].state;
+          block.className =
+            "w-full h-full rounded-md sm:rounded-lg border-b-[3px] sm:border-b-[4px] shadow-sm transition-all duration-300";
+
+          if (state === 0) {
+            block.classList.add(
+              "bg-gradient-to-b",
+              "from-slate-100",
+              "to-slate-200",
+              "border-slate-300",
+            );
+          } else if (state === 1) {
+            block.classList.add(
+              "bg-gradient-to-b",
+              "from-yellow-300",
+              "to-yellow-400",
+              "border-yellow-600",
+              "-translate-y-1",
+              "shadow-md",
+            );
+          } else if (state === 2) {
+            block.classList.add(
+              "bg-gradient-to-b",
+              "from-green-400",
+              "to-green-500",
+              "border-green-700",
+              "-translate-y-1",
+              "shadow-md",
+            );
+          }
+        }
       }
 
       // --- Rendering & Effects ---
@@ -592,7 +659,7 @@
           rowBears.forEach((bear) => {
             const bearDiv = document.createElement("div");
             const inactiveDuringStep2 = gameState === 1 && bear.state === 0;
-            const inactiveDuringStep3 = gameState === 2 && bear.state === 1;
+            const inactiveDuringStep3 = gameState === 2 && bear.state !== 2;
             const canInteract = gameState === 0 || (gameState === 1 && bear.state > 0);
 
             bearDiv.className = `relative transition-all duration-200 ${canInteract ? "hover:-translate-y-2 cursor-pointer active:scale-90" : "cursor-default"}`;
