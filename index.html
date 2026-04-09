@@ -8,53 +8,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @keyframes shake {
-        0%,
-        100% {
-          transform: translateX(0);
-        }
-        10%,
-        30%,
-        50%,
-        70%,
-        90% {
-          transform: translateX(-5px);
-        }
-        20%,
-        40%,
-        60%,
-        80% {
-          transform: translateX(5px);
-        }
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
       }
       .animate-shake {
         animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
       }
       @keyframes pop {
-        0% {
-          transform: scale(0.8);
-          opacity: 0;
-        }
-        50% {
-          transform: scale(1.1);
-          opacity: 1;
-        }
-        100% {
-          transform: scale(1);
-          opacity: 1;
-        }
+        0% { transform: scale(0.8); opacity: 0; }
+        50% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
       }
       .animate-pop {
         animation: pop 0.3s ease-out forwards;
       }
       @keyframes floatUp {
-        0% {
-          transform: translateY(0) scale(1);
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(-100px) scale(0);
-          opacity: 0;
-        }
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        100% { transform: translateY(-100px) scale(0); opacity: 0; }
       }
       .confetti-piece {
         position: absolute;
@@ -62,7 +33,6 @@
         pointer-events: none;
         z-index: 50;
       }
-
       /* Removing number input arrows */
       input[type="number"]::-webkit-inner-spin-button,
       input[type="number"]::-webkit-outer-spin-button {
@@ -73,72 +43,85 @@
         -moz-appearance: textfield;
         appearance: textfield;
       }
+      /* Custom shadow for the 3D pie chart look */
+      .pie-shadow {
+        box-shadow: inset 0 8px 10px rgba(0,0,0,0.1), 0 10px 20px rgba(0,0,0,0.15);
+      }
+      .pie-initial-bg {
+        background: conic-gradient(#e5e7eb 0% 100%);
+      }
     </style>
   </head>
-  <body
-    class="h-screen bg-green-50 flex flex-col items-center font-sans select-none overflow-hidden pb-2 md:pb-3"
-  >
+  <body class="h-screen bg-green-50 flex flex-col font-sans select-none overflow-hidden">
     <!-- Confetti Container -->
-    <div
-      id="confetti-container"
-      class="fixed inset-0 pointer-events-none overflow-hidden z-50"
-    ></div>
+    <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden z-50"></div>
 
     <!-- Header -->
-    <div
-      class="w-full bg-green-900 text-white p-3 shadow-md flex justify-between items-center z-10"
-    >
+    <div class="w-full bg-green-900 text-white p-3 shadow-md flex justify-between items-center z-10 shrink-0">
       <h1 class="text-xl md:text-2xl font-bold tracking-wider">🐻 Forest Fractions</h1>
-      <button
-        onclick="initGame()"
-        class="bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded-full font-bold text-sm md:text-base transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer"
-      >
+      <button onclick="initGame()" class="bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded-full font-bold text-sm md:text-base transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer">
         <span>↺</span> Restart
       </button>
     </div>
 
-    <!-- Game Area -->
-    <div
-      class="flex-1 w-full max-w-[95%] lg:max-w-4xl p-2 md:p-3 flex flex-col items-center justify-center gap-2 md:gap-3 relative overflow-hidden"
-    >
-      <div
-        id="game-board"
-        class="flex flex-col gap-2 md:gap-3 lg:gap-4 w-full items-center"
-      >
-        <!-- Bears will be injected here -->
-      </div>
-    </div>
+    <!-- Main Layout -->
+    <div class="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-3 lg:gap-4 px-3 md:px-5 py-3 md:py-4 overflow-visible">
 
-    <!-- Instruction & Interaction Panel -->
-    <div
-      id="control-panel"
-      class="w-[84%] md:w-[64%] max-w-lg bg-white rounded-3xl p-2.5 md:p-3 shadow-2xl border-4 border-green-200 flex flex-col md:flex-row items-center gap-2.5 md:gap-3 justify-between transition-colors mb-4 md:mb-5"
-    >
-      <div
-        class="flex-1 flex items-center gap-2 md:gap-2.5 text-sm sm:text-base md:text-lg text-green-900 font-medium w-full"
-      >
-        <div
-          id="icon-container"
-          class="bg-yellow-100 p-1.5 rounded-full shrink-0"
-        >
-          📝
+      <!-- Top Split: Left Pie / Right Bears -->
+      <div class="flex-1 min-h-0 w-full flex flex-col lg:flex-row gap-3 lg:gap-4">
+
+        <!-- LEFT SIDE: Pie Chart (no container card) -->
+        <div id="pie-panel" class="w-full lg:w-[420px] xl:w-[460px] shrink-0 flex flex-col items-center justify-center gap-4 py-1">
+
+          <div class="relative">
+            <div id="pie-chart" class="w-72 h-72 sm:w-80 sm:h-80 md:w-[22rem] md:h-[22rem] rounded-full border-[6px] border-white pie-shadow pie-initial-bg transition-all duration-700 ease-out"></div>
+            <div class="absolute inset-0 m-auto w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-full pie-shadow flex items-center justify-center">
+              <span class="text-4xl sm:text-5xl">🐻</span>
+            </div>
+          </div>
+
+          <div id="pie-indicators" class="w-[92%] flex flex-col gap-2 text-sm sm:text-base font-semibold text-green-900">
+            <div class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1.5">
+              <span class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500 shrink-0"></span>
+              <span>Yellow = Bears With Honey</span>
+            </div>
+            <div class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-1.5">
+              <span class="w-3 h-3 rounded-full bg-green-400 border border-green-500 shrink-0"></span>
+              <span>Green = Bears That Ate Honey</span>
+            </div>
+          </div>
+
+          <!-- Final Equation Reveal (Hidden until end) -->
+          <div id="final-equation" class="hidden w-[92%] flex-col items-center gap-2 bg-green-100 border-2 border-green-300 p-3 rounded-xl animate-pop">
+            <span class="text-green-800 text-xs sm:text-sm font-bold text-center">Fraction Multiplication!</span>
+            <div id="equation-content" class="flex items-center justify-center gap-2 md:gap-3 bg-white px-4 py-2 rounded-lg shadow-sm w-full">
+              <!-- Equation injected here -->
+            </div>
+          </div>
         </div>
 
-        <div
-          id="instruction-text"
-          class="flex-1 flex items-center flex-wrap leading-snug"
-        >
-          <!-- Instructions injected here -->
+        <!-- RIGHT SIDE: Game Board (no container card) -->
+        <div id="game-board-container" class="flex-1 min-h-0 min-w-0 flex flex-col items-center justify-center p-1 sm:p-2 md:p-3 overflow-visible">
+          <div id="game-board" class="flex flex-col gap-1.5 md:gap-2.5 lg:gap-3 w-full items-center">
+            <!-- Bears will be injected here -->
+          </div>
         </div>
       </div>
 
-      <button
-        id="action-btn"
-        onclick="handleAction()"
-        class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-2.5 sm:px-3.5 py-1.5 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap"
-      >
-        DONE
-      </button>
+      <!-- Bottom Instruction & Action Panel -->
+      <div id="control-panel" class="w-[92%] md:w-[90%] max-w-5xl mx-auto bg-white rounded-2xl p-3 md:p-4 shadow-xl border-4 border-green-200 flex flex-col md:flex-row items-center gap-3 md:gap-4 justify-between transition-colors shrink-0">
+        <div class="flex-1 flex items-center gap-2.5 md:gap-3 text-sm sm:text-base md:text-lg text-green-900 font-medium w-full">
+          <div id="icon-container" class="bg-yellow-100 p-2 rounded-full shrink-0 text-lg">📝</div>
+          <div id="instruction-text" class="flex-1 flex items-center flex-wrap leading-snug">
+            <!-- Instructions injected here -->
+          </div>
+        </div>
+
+        <button id="action-btn" onclick="handleAction()" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap">
+          DONE
+        </button>
+      </div>
+
     </div>
 
     <script>
@@ -161,7 +144,6 @@
         let options = [];
         for (let d = 2; d <= total; d++) {
           if (total % d === 0) {
-            // Ensures NO decimals
             for (let n = 1; n < d; n++) {
               let target = (total * n) / d;
               if (target >= minTarget) {
@@ -171,7 +153,6 @@
           }
         }
         if (options.length === 0) return { n: 1, d: total, target: 1 };
-
         let picked = options[Math.floor(Math.random() * options.length)];
         const divisor = gcd(picked.n, picked.d);
         return { n: picked.n / divisor, d: picked.d / divisor };
@@ -179,15 +160,15 @@
 
       // --- UI Formatters ---
       const formatFraction = (n, d) => `
-          <span class="inline-flex flex-col items-center align-middle mx-1.5 text-base md:text-xl font-bold text-green-900">
+          <span class="inline-flex flex-col items-center justify-center align-middle mx-1.5 text-base sm:text-lg font-bold text-green-900">
             <span class="border-b-[2px] border-green-900 leading-none px-1 pb-[1px]">${n}</span>
-                <span class="leading-none px-1 pt-[2px]">${d}</span>
-            </span>
-        `;
+            <span class="leading-none px-1 pt-[2px]">${d}</span>
+          </span>
+      `;
 
       // --- Core Game Logic ---
       function initGame() {
-        cols = Math.floor(Math.random() * 5) + 3; // 3 to 7 columns
+        cols = Math.floor(Math.random() * 4) + 4; // 4 to 7 columns; renderBears auto-fits size
         totalBears = rows * cols;
 
         f1 = getValidFraction(totalBears, 4);
@@ -197,39 +178,39 @@
         bears = Array.from({ length: totalBears }, (_, i) => ({
           id: i,
           row: Math.floor(i / cols),
-          state: 0, // 0: Normal, 1: Has Honey, 2: Eaten Honey
+          state: 0,
         }));
 
         gameState = 0;
+        document.getElementById('final-equation').classList.add('hidden');
         updateUI();
         renderBears();
+        updateChart(); // Initial chart render
       }
 
       function handleBearClick(index) {
-        if (gameState === 3) return; // Game over
+        if (gameState === 3) return; 
 
         const bear = bears[index];
 
         if (gameState === 0) {
-          // Toggle Honey (0 <-> 1)
           bear.state = bear.state === 0 ? 1 : 0;
         } else if (gameState === 1) {
-          // Toggle Eating (1 <-> 2) ONLY if bear has honey
           if (bear.state > 0) {
             bear.state = bear.state === 1 ? 2 : 1;
           }
         }
         renderBears();
+        updateChart(); // Live update pie chart!
       }
 
       function handleAction() {
         const panel = document.getElementById("control-panel");
-        const rect = panel.getBoundingClientRect();
-
+        
         if (gameState === 0) {
           const currentH = bears.filter((b) => b.state >= 1).length;
           if (currentH === targetH) {
-            triggerConfetti(rect.x + rect.width / 2, rect.y);
+            triggerConfetti();
             gameState = 1;
             updateUI();
           } else {
@@ -238,9 +219,8 @@
         } else if (gameState === 1) {
           const currentE = bears.filter((b) => b.state === 2).length;
           const targetE = (targetH * f2.n) / f2.d;
-
           if (currentE === targetE) {
-            triggerConfetti(rect.x + rect.width / 2, rect.y);
+            triggerConfetti();
             gameState = 2;
             updateUI();
           } else {
@@ -249,22 +229,15 @@
         } else if (gameState === 2) {
           const numInput = document.getElementById("user-num").value;
           const denInput = document.getElementById("user-den").value;
-
           const num = parseInt(numInput);
           const den = parseInt(denInput);
-
           const targetE = (targetH * f2.n) / f2.d;
           const targetRatio = targetE / totalBears;
 
-          if (
-            !isNaN(num) &&
-            !isNaN(den) &&
-            den !== 0 &&
-            Math.abs(num / den - targetRatio) < 0.001
-          ) {
+          if (!isNaN(num) && !isNaN(den) && den !== 0 && Math.abs(num / den - targetRatio) < 0.001) {
             finalNum = num;
             finalDen = den;
-            triggerConfetti(window.innerWidth / 2, window.innerHeight / 2);
+            triggerConfetti();
             gameState = 3;
             updateUI();
           } else {
@@ -275,40 +248,72 @@
         }
       }
 
+      // --- Live Chart Logic ---
+      function updateChart() {
+        const chart = document.getElementById('pie-chart');
+        
+        const currentH = bears.filter((b) => b.state >= 1).length;
+        const currentE = bears.filter((b) => b.state === 2).length;
+
+        // Calculate percentages
+        const pGreen = (currentE / totalBears) * 100;
+        const pYellow = (currentH / totalBears) * 100;
+
+        chart.style.background = `conic-gradient(
+            #4ade80 0% ${pGreen}%, 
+            #fde047 ${pGreen}% ${pYellow}%, 
+            #e5e7eb ${pYellow}% 100%
+        )`;
+      }
+
       // --- Rendering & Effects ---
       function renderBears() {
         const board = document.getElementById("game-board");
+        const boardContainer = document.getElementById("game-board-container");
         board.innerHTML = "";
+
+        const boardWidth = Math.max(340, Math.floor(boardContainer.clientWidth));
+        const sidePadding = Math.max(10, Math.floor(boardWidth * 0.03));
+        const usableWidth = Math.max(280, boardWidth - sidePadding * 2);
+        const gapSize = Math.max(4, Math.min(12, Math.floor(usableWidth * 0.012)));
+        const bearSize = Math.max(54, Math.min(96, Math.floor((usableWidth - gapSize * (cols - 1)) / cols)));
+        const honeySize = Math.max(24, Math.floor(bearSize * 0.55));
+        const sparkleSize = Math.max(20, Math.floor(bearSize * 0.42));
+        const platformHeight = Math.max(28, Math.min(44, Math.floor(bearSize * 0.42)));
+        const platformBorder = Math.max(4, Math.floor(platformHeight * 0.16));
 
         for (let r = 0; r < rows; r++) {
           const rowBears = bears.filter((b) => b.row === r);
-
           const rowWrapper = document.createElement("div");
-          rowWrapper.className = "relative flex justify-center group w-full";
+          rowWrapper.className = "relative flex justify-center group w-full box-border";
+          rowWrapper.style.paddingLeft = `${sidePadding}px`;
+          rowWrapper.style.paddingRight = `${sidePadding}px`;
 
           // Platform
           const platform = document.createElement("div");
-          platform.className =
-            "absolute bottom-0 w-[98%] h-6 sm:h-7 md:h-8 lg:h-9 bg-green-800 rounded-full border-b-[3px] md:border-b-[5px] border-green-950 shadow-2xl -z-10 group-hover:bg-green-700 transition-colors drop-shadow-[0_10px_10px_rgba(0,0,0,0.4)]";
+          platform.className = "absolute bottom-0 w-[98%] bg-green-800 rounded-full border-green-950 shadow-xl -z-10 group-hover:bg-green-700 transition-colors";
+          platform.style.height = `${platformHeight}px`;
+          platform.style.borderBottomWidth = `${platformBorder}px`;
+          platform.style.filter = "drop-shadow(0 10px 10px rgba(0,0,0,0.35))";
           rowWrapper.appendChild(platform);
 
           // Bears container
           const bearsContainer = document.createElement("div");
-          bearsContainer.className =
-            "flex justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 px-3 items-end relative";
+          bearsContainer.className = "flex justify-center px-1.5 items-end relative";
+          bearsContainer.style.gap = `${gapSize}px`;
 
           rowBears.forEach((bear) => {
             const bearDiv = document.createElement("div");
             bearDiv.className = `relative transition-transform duration-200 hover:-translate-y-2 ${gameState !== 2 && gameState !== 3 ? "cursor-pointer active:scale-90" : "cursor-default"}`;
             bearDiv.onclick = () => handleBearClick(bear.id);
 
-            let html = `<div class="text-[2.4rem] sm:text-[2.8rem] md:text-[3.2rem] lg:text-[3.9rem] filter drop-shadow-md z-10 relative animate-pop leading-none">🐻</div>`;
+            let html = `<div class="filter drop-shadow-md z-10 relative animate-pop leading-none" style="font-size:${bearSize}px;">🐻</div>`;
 
             if (bear.state >= 1) {
-              html += `<div class="absolute -bottom-1 -right-1 md:-right-1.5 text-xl sm:text-2xl md:text-3xl animate-pop z-20">🍯</div>`;
+              html += `<div class="absolute -bottom-1 -right-1 animate-pop z-20" style="font-size:${honeySize}px;">🍯</div>`;
             }
             if (bear.state === 2) {
-              html += `<div class="absolute -top-3 md:-top-4 left-1/2 -translate-x-1/2 text-base sm:text-xl md:text-2xl animate-pop z-30">✨</div>`;
+              html += `<div class="absolute -top-3 left-1/2 -translate-x-1/2 animate-pop z-30" style="font-size:${sparkleSize}px;">✨</div>`;
             }
 
             bearDiv.innerHTML = html;
@@ -320,10 +325,18 @@
         }
       }
 
+      window.addEventListener("resize", () => {
+        if (bears.length > 0) {
+          renderBears();
+        }
+      });
+
       function updateUI() {
         const iconContainer = document.getElementById("icon-container");
         const instructionText = document.getElementById("instruction-text");
         const actionBtn = document.getElementById("action-btn");
+        const eqContainer = document.getElementById("final-equation");
+        const eqContent = document.getElementById("equation-content");
 
         if (gameState === 0) {
           iconContainer.innerHTML = "📝";
@@ -334,27 +347,26 @@
           instructionText.innerHTML = `Now, make ${formatFraction(f2.n, f2.d)} of the <strong>${targetH}</strong> bears with honeypots eat their honey.`;
         } else if (gameState === 2) {
           instructionText.innerHTML = `
-                    What fraction of all <strong>${totalBears}</strong> bears have eaten honey? 
-              <div class="inline-flex flex-col items-center align-middle mx-2 gap-1 bg-green-50 p-1.5 md:p-2 rounded-lg border-2 border-green-200 mt-1 sm:mt-0">
-                <input type="number" id="user-num" class="w-12 md:w-14 h-8 md:h-9 text-center font-bold text-base md:text-lg border-2 border-green-300 rounded focus:outline-none focus:border-green-600 bg-white">
-                <div class="w-12 md:w-14 h-1 bg-green-800 rounded-full"></div>
-                <input type="number" id="user-den" class="w-12 md:w-14 h-8 md:h-9 text-center font-bold text-base md:text-lg border-2 border-green-300 rounded focus:outline-none focus:border-green-600 bg-white">
-                    </div>
-                `;
-        } else if (gameState === 3) {
-          iconContainer.innerHTML = "🎉";
-          instructionText.innerHTML = `
-            <div class="flex flex-col w-full gap-1.5 md:gap-2">
-              <span class="text-green-700 font-bold text-sm sm:text-base">Amazing job! You just did fraction multiplication! 🌟</span>
-              <div class="flex items-center gap-2 md:gap-3 bg-green-100/60 px-3 py-1.5 rounded-xl border-2 border-green-200 w-fit">
-                ${formatFraction(f1.n, f1.d)}
-                <span class="text-green-800 font-black text-lg md:text-xl">×</span>
-                ${formatFraction(f2.n, f2.d)}
-                <span class="text-green-800 font-black text-lg md:text-xl">=</span>
-                ${formatFraction(finalNum, finalDen)}
-              </div>
+            What fraction of all <strong>${totalBears}</strong> bears have eaten honey? 
+            <div class="inline-flex flex-col items-center align-middle mx-2 gap-1 bg-green-50 p-1 rounded-lg border-2 border-green-200 mt-1 sm:mt-0">
+              <input type="number" id="user-num" class="w-11 h-7 text-center font-bold text-sm border-2 border-green-300 rounded focus:outline-none focus:border-green-600 bg-white">
+              <div class="w-11 h-[3px] bg-green-800 rounded-full"></div>
+              <input type="number" id="user-den" class="w-11 h-7 text-center font-bold text-sm border-2 border-green-300 rounded focus:outline-none focus:border-green-600 bg-white">
             </div>
           `;
+        } else if (gameState === 3) {
+          iconContainer.innerHTML = "🎉";
+          instructionText.innerHTML = `<span class="text-green-700 font-bold">Amazing job! You solved it correctly! 🌟</span>`;
+          
+          eqContainer.classList.remove('hidden');
+          eqContent.innerHTML = `
+            ${formatFraction(f1.n, f1.d)}
+            <span class="text-green-800 font-black text-base md:text-lg">×</span>
+            ${formatFraction(f2.n, f2.d)}
+            <span class="text-green-800 font-black text-base md:text-lg">=</span>
+            ${formatFraction(finalNum, finalDen)}
+          `;
+          
           actionBtn.innerHTML = "PLAY AGAIN";
           setupActionButtonClasses(true);
         }
@@ -363,11 +375,9 @@
       function setupActionButtonClasses(isCompleted) {
         const btn = document.getElementById("action-btn");
         if (isCompleted) {
-          btn.className =
-            "bg-green-500 hover:bg-green-400 text-white px-2.5 sm:px-3.5 py-1.5 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[4px] transition-all animate-bounce cursor-pointer whitespace-nowrap";
+          btn.className = "bg-green-500 hover:bg-green-400 text-white px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[4px] transition-all animate-bounce cursor-pointer whitespace-nowrap";
         } else {
-          btn.className =
-            "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-2.5 sm:px-3.5 py-1.5 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap";
+          btn.className = "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap";
         }
       }
 
@@ -375,36 +385,29 @@
         const panel = document.getElementById("control-panel");
         panel.classList.add("animate-shake", "border-red-400");
         panel.classList.remove("border-green-200");
-
         setTimeout(() => {
           panel.classList.remove("animate-shake", "border-red-400");
           panel.classList.add("border-green-200");
         }, 600);
       }
 
-      function triggerConfetti(x, y) {
+      function triggerConfetti() {
         const container = document.getElementById("confetti-container");
         const colors = ["#fde047", "#4ade80", "#60a5fa", "#f472b6", "#a78bfa"];
+        const x = window.innerWidth / 2;
+        const y = window.innerHeight / 2;
 
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 40; i++) {
           const confetti = document.createElement("div");
-          confetti.className = "confetti-piece text-2xl";
+          confetti.className = "confetti-piece text-2xl md:text-3xl";
           confetti.innerHTML = "✨";
-
-          const startX = x + (Math.random() * 100 - 50);
-          const color = colors[Math.floor(Math.random() * colors.length)];
-
+          const startX = x + (Math.random() * window.innerWidth - window.innerWidth/2);
           confetti.style.left = startX + "px";
-          confetti.style.top = y + "px";
-          confetti.style.color = color;
-
+          confetti.style.top = (y + Math.random() * 100) + "px";
+          confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
           container.appendChild(confetti);
-
-          // Cleanup after animation
           setTimeout(() => {
-            if (container.contains(confetti)) {
-              container.removeChild(confetti);
-            }
+            if (container.contains(confetti)) container.removeChild(confetti);
           }, 1500);
         }
       }
