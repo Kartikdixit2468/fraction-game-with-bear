@@ -81,6 +81,38 @@
       .pie-initial-bg {
         background: conic-gradient(#e5e7eb 0% 100%);
       }
+      .success-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -160%);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 70;
+        transition:
+          transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.25s ease-out;
+      }
+      .success-popup.show {
+        transform: translate(-50%, -50%);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .success-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 65;
+        transition: opacity 0.25s ease-out;
+      }
+      .success-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
     </style>
   </head>
   <body
@@ -91,6 +123,58 @@
       id="confetti-container"
       class="fixed inset-0 pointer-events-none overflow-hidden z-50"
     ></div>
+
+    <div id="success-overlay" class="success-overlay"></div>
+
+    <div id="success-popup" class="success-popup w-[96%] max-w-5xl">
+      <div
+        class="relative bg-white/95 backdrop-blur-sm border-4 border-green-300 rounded-3xl shadow-2xl px-4 py-4 sm:px-6 sm:py-5 max-h-[calc(100vh-2rem)] overflow-y-auto"
+      >
+        <button
+          type="button"
+          onclick="hideSuccessPopup()"
+          aria-label="Close popup"
+          class="absolute top-3 right-3 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border-2 border-green-200 text-green-800 font-black text-lg sm:text-xl hover:bg-green-50 active:scale-95 transition-transform cursor-pointer"
+        >
+          ×
+        </button>
+
+        <div class="pr-10 sm:pr-12">
+          <div class="flex items-center gap-3 text-green-900 min-w-0">
+            <span
+              class="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-yellow-100 flex items-center justify-center text-xl sm:text-2xl shrink-0"
+              >🎉</span
+            >
+            <p
+              id="success-popup-text"
+              class="font-extrabold text-base sm:text-2xl leading-tight"
+            >
+              Amazing job! You solved it correctly! 🌟
+            </p>
+          </div>
+
+          <div class="mt-4 bg-green-50 border-2 border-green-200 rounded-2xl p-3 sm:p-4">
+            <p class="text-green-900 font-bold text-sm sm:text-lg text-center">Result Equation</p>
+            <div
+              id="success-popup-equation"
+              class="mt-2 bg-white rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5"
+            >
+              <!-- Result equation injected here -->
+            </div>
+          </div>
+
+          <div class="mt-4 flex justify-center">
+            <button
+              type="button"
+              onclick="startNewGameFromPopup()"
+              class="bg-green-500 hover:bg-green-400 text-white px-5 sm:px-6 py-2.5 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap"
+            >
+              PLAY NOW
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Header -->
     <div
@@ -434,6 +518,8 @@
 
       // --- Core Game Logic ---
       function initGame() {
+        hideSuccessPopup();
+
         cols = Math.floor(Math.random() * 4) + 4; // 4 to 7 columns; renderBears auto-fits size
         totalBears = rows * cols;
 
@@ -521,6 +607,7 @@
             gameState = 3;
             updateUI();
             renderBears();
+            showSuccessPopup("Amazing job! You solved it correctly! 🌟");
           } else {
             triggerError();
           }
@@ -751,6 +838,140 @@
           btn.className =
             "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-4 sm:px-5 py-2 rounded-xl font-bold text-sm sm:text-base shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap";
         }
+      }
+
+      function showSuccessPopup(message) {
+        const popup = document.getElementById("success-popup");
+        const overlay = document.getElementById("success-overlay");
+        const popupText = document.getElementById("success-popup-text");
+        const popupEquation = document.getElementById("success-popup-equation");
+        if (!popup || !popupText) return;
+
+        popupText.textContent = message || "Amazing job! You solved it correctly! 🌟";
+        if (popupEquation) {
+          popupEquation.innerHTML = getResultEquationHtml();
+          updateSuccessPopupEquationPies();
+        }
+        if (overlay) {
+          overlay.classList.add("show");
+        }
+        popup.classList.add("show");
+      }
+
+      function hideSuccessPopup() {
+        const popup = document.getElementById("success-popup");
+        const overlay = document.getElementById("success-overlay");
+        if (!popup) return;
+
+        popup.classList.remove("show");
+        if (overlay) {
+          overlay.classList.remove("show");
+        }
+      }
+
+      function getResultEquationHtml() {
+        const divisor = gcd(finalNum, finalDen);
+        const simplifiedInline =
+          divisor > 1
+            ? `
+              <span class="text-green-700 font-semibold text-sm sm:text-base whitespace-nowrap">which is equal to</span>
+              <div class="flex justify-center items-center min-w-[56px]">${formatFraction(finalNum / divisor, finalDen / divisor)}</div>
+            `
+            : "";
+
+        let eqHtml = `
+          <div class="w-full flex flex-col items-center gap-3">
+            <div class="w-full overflow-x-auto">
+              <div class="min-w-max flex items-center justify-center gap-1 sm:gap-2 text-center px-1">
+                <div class="flex justify-center items-center min-w-[56px]">${formatFraction(f1.n, f1.d)}</div>
+                <span class="text-green-800 font-black text-lg sm:text-xl text-center">×</span>
+                <div class="flex justify-center items-center min-w-[56px]">${formatFraction(f2.n, f2.d)}</div>
+                <span class="text-green-800 font-black text-lg sm:text-xl text-center">=</span>
+                <div class="flex justify-center items-center min-w-[56px]">${formatFraction(finalNum, finalDen)}</div>
+                ${simplifiedInline}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-[auto_24px_auto_24px_auto] items-start justify-center gap-1 sm:gap-2 text-center">
+              <div class="flex justify-center items-center min-w-[56px]">
+                <div id="success-eq-pie-f1" class="w-[5.25rem] h-[5.25rem] sm:w-[5.75rem] sm:h-[5.75rem] rounded-full border-[3px] border-white shadow-md"></div>
+              </div>
+              <span class="text-transparent select-none font-black text-lg sm:text-xl">×</span>
+              <div class="flex justify-center items-center min-w-[56px]">
+                <div id="success-eq-pie-f2" class="w-[5.25rem] h-[5.25rem] sm:w-[5.75rem] sm:h-[5.75rem] rounded-full border-[3px] border-white shadow-md"></div>
+              </div>
+              <span class="text-transparent select-none font-black text-lg sm:text-xl">=</span>
+              <div class="flex justify-center items-center min-w-[56px]">
+                <div id="success-eq-pie-result" class="w-[5.25rem] h-[5.25rem] sm:w-[5.75rem] sm:h-[5.75rem] rounded-full border-[3px] border-white shadow-md"></div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        return eqHtml;
+      }
+
+      function updateSuccessPopupEquationPies() {
+        const pieF1 = document.getElementById("success-eq-pie-f1");
+        const pieF2 = document.getElementById("success-eq-pie-f2");
+        const pieResult = document.getElementById("success-eq-pie-result");
+
+        setFractionMiniPie(pieF1, f1.n, f1.d, "#fde047", "#e5e7eb");
+        setNestedFractionMiniPie(pieF2, f1.n, f1.d, f2.n, f2.d);
+        setFractionMiniPie(pieResult, finalNum, finalDen, "#22c55e", "#e5e7eb");
+      }
+
+      function setNestedFractionMiniPie(pieElement, baseNum, baseDen, partNum, partDen) {
+        if (!pieElement || !baseDen || baseDen <= 0 || !partDen || partDen <= 0) return;
+
+        const basePercent = Math.max(0, Math.min(100, (baseNum / baseDen) * 100));
+        const nestedPercent = Math.max(0, Math.min(basePercent, (partNum / partDen) * basePercent));
+
+        if (basePercent <= 0) {
+          pieElement.style.background = "conic-gradient(#e5e7eb 0% 100%)";
+          return;
+        }
+
+        const sep = 0.8;
+        const greenEnd = nestedPercent;
+        const split1End = greenEnd < basePercent ? Math.min(100, greenEnd + sep) : greenEnd;
+        const yellowStart = split1End;
+        const yellowEnd = Math.max(yellowStart, basePercent);
+        const split2End = yellowEnd < 100 ? Math.min(100, yellowEnd + sep) : yellowEnd;
+
+        pieElement.style.background = `conic-gradient(
+          #4ade80 0% ${greenEnd}%,
+          rgba(255,255,255,0.95) ${greenEnd}% ${split1End}%,
+          #fde047 ${yellowStart}% ${yellowEnd}%,
+          rgba(255,255,255,0.95) ${yellowEnd}% ${split2End}%,
+          #e5e7eb ${split2End}% 100%
+        )`;
+      }
+
+      function setFractionMiniPie(pieElement, num, den, fillColor, restColor) {
+        if (!pieElement || !den || den <= 0) return;
+
+        const fillPercent = Math.max(0, Math.min(100, (num / den) * 100));
+
+        if (fillPercent <= 0 || fillPercent >= 100) {
+          pieElement.style.background = `conic-gradient(${fillPercent >= 100 ? fillColor : restColor} 0% 100%)`;
+          return;
+        }
+
+        const border = 0.8;
+        const borderStart = Math.max(0, fillPercent - border / 2);
+        const borderEnd = Math.min(100, fillPercent + border / 2);
+
+        pieElement.style.background = `conic-gradient(
+          ${fillColor} 0% ${borderStart}%,
+          rgba(255,255,255,0.95) ${borderStart}% ${borderEnd}%,
+          ${restColor} ${borderEnd}% 100%
+        )`;
+      }
+
+      function startNewGameFromPopup() {
+        hideSuccessPopup();
+        initGame();
       }
 
       function triggerError() {
