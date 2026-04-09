@@ -546,40 +546,44 @@
             #e5e7eb ${pYellow}% 100%
         )`;
 
-        for (let i = 0; i < totalBears; i++) {
-          const block = document.getElementById(`grid-block-${i}`);
-          if (!block) continue;
+          // Grid blocks are count-based (sequential), not tied to specific bear positions.
+          // This means any click updates the next visual block in order.
+          for (let i = 0; i < totalBears; i++) {
+            const block = document.getElementById(`grid-block-${i}`);
+            if (!block) continue;
 
-          const state = bears[i].state;
-          block.className =
-            "w-full h-full rounded-md sm:rounded-lg border-b-[3px] sm:border-b-[4px] shadow-sm transition-all duration-300";
+            block.className =
+              "w-full h-full rounded-md sm:rounded-lg border-b-[3px] sm:border-b-[4px] shadow-sm transition-all duration-300";
 
-          if (state === 0) {
-            block.classList.add(
-              "bg-gradient-to-b",
-              "from-slate-100",
-              "to-slate-200",
-              "border-slate-300",
-            );
-          } else if (state === 1) {
-            block.classList.add(
-              "bg-gradient-to-b",
-              "from-yellow-300",
-              "to-yellow-400",
-              "border-yellow-600",
-              "-translate-y-1",
-              "shadow-md",
-            );
-          } else if (state === 2) {
-            block.classList.add(
-              "bg-gradient-to-b",
-              "from-green-400",
-              "to-green-500",
-              "border-green-700",
-              "-translate-y-1",
-              "shadow-md",
-            );
-          }
+            if (i < currentE) {
+              // First currentE blocks = eaten (green)
+              block.classList.add(
+                "bg-gradient-to-b",
+                "from-green-400",
+                "to-green-500",
+                "border-green-700",
+                "-translate-y-1",
+                "shadow-md",
+              );
+            } else if (i < currentH) {
+              // Next blocks up to currentH = honey only (yellow)
+              block.classList.add(
+                "bg-gradient-to-b",
+                "from-yellow-300",
+                "to-yellow-400",
+                "border-yellow-600",
+                "-translate-y-1",
+                "shadow-md",
+              );
+            } else {
+              // Remaining blocks = empty
+              block.classList.add(
+                "bg-gradient-to-b",
+                "from-slate-100",
+                "to-slate-200",
+                "border-slate-300",
+              );
+            }
         }
       }
 
