@@ -376,9 +376,121 @@
       let finalDen = 0;
       let chartMode = "grid";
       let currentVisualMetrics = { bearSize: 56, honeySize: 24, sparkleSize: 20 };
+      let bgMusic = null;
+      let isAudioInitialized = false;
+      let hoverAudioCtx = null;
+      let lastHoverToneAt = 0;
+
+      const soundFiles = {
+        bgMain: "sounds/bg_main.mp3",
+        correct: "sounds/correct.mp3",
+        wrong: "sounds/wrong.mp3",
+        congrats: "sounds/congrats.mp3",
+        select: "sounds/select.mp3",
+      };
 
       // --- Math Helpers ---
       const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+
+      function safePlay(mediaElement) {
+        if (!mediaElement) return;
+        const playPromise = mediaElement.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {
+            // Ignore autoplay restriction errors silently.
+          });
+        }
+      }
+
+      function initAudio() {
+        if (isAudioInitialized) return;
+
+        bgMusic = new Audio(soundFiles.bgMain);
+        bgMusic.loop = true;
+        bgMusic.preload = "auto";
+        bgMusic.volume = 0.3;
+        bgMusic.playbackRate = 0.75;
+
+        if ("preservesPitch" in bgMusic) {
+          bgMusic.preservesPitch = false;
+        }
+        if ("mozPreservesPitch" in bgMusic) {
+          bgMusic.mozPreservesPitch = false;
+        }
+        if ("webkitPreservesPitch" in bgMusic) {
+          bgMusic.webkitPreservesPitch = false;
+        }
+
+        isAudioInitialized = true;
+      }
+
+      function startBackgroundMusic() {
+        if (!isAudioInitialized) {
+          initAudio();
+        }
+        if (!bgMusic || !bgMusic.paused) return;
+        safePlay(bgMusic);
+      }
+
+      function playSoundEffect(name) {
+        const src = soundFiles[name];
+        if (!src) return;
+
+        const sfx = new Audio(src);
+        sfx.preload = "auto";
+        sfx.volume = name === "congrats" ? 0.85 : 0.8;
+        safePlay(sfx);
+      }
+
+      function playHoverTone() {
+        const now = Date.now();
+        if (now - lastHoverToneAt < 90) return;
+        lastHoverToneAt = now;
+
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+
+        if (!hoverAudioCtx) {
+          hoverAudioCtx = new AudioContextClass();
+        }
+
+        if (hoverAudioCtx.state === "suspended") {
+          hoverAudioCtx.resume().catch(() => {
+            // Ignore resume failures on restricted autoplay contexts.
+          });
+        }
+
+        const osc = hoverAudioCtx.createOscillator();
+        const gain = hoverAudioCtx.createGain();
+        const start = hoverAudioCtx.currentTime;
+        const duration = 0.11;
+
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(720, start);
+        osc.frequency.exponentialRampToValueAtTime(1060, start + duration);
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.12, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+        osc.connect(gain);
+        gain.connect(hoverAudioCtx.destination);
+        osc.start(start);
+        osc.stop(start + duration + 0.015);
+      }
+
+      function unlockAudioAndStartBg() {
+        startBackgroundMusic();
+      }
+
+      function setupAudioUnlockHandlers() {
+        window.addEventListener("pointerdown", unlockAudioAndStartBg, {
+          once: true,
+        });
+        window.addEventListener("keydown", unlockAudioAndStartBg, {
+          once: true,
+        });
+      }
 
       const getValidFraction = (total, minTarget) => {
         let options = [];
@@ -542,6 +654,8 @@
       }
 
       function handleBearClick(index) {
+        startBackgroundMusic();
+
         if (gameState === 3) return;
 
         const bear = bears[index];
@@ -558,6 +672,7 @@
         }
 
         if (didUpdate) {
+          playSoundEffect("select");
           updateBearVisual(index, true);
           updateChart(); // Live update pie chart!
         }
@@ -565,10 +680,12 @@
 
       function handleAction() {
         const panel = document.getElementById("control-panel");
+        startBackgroundMusic();
 
         if (gameState === 0) {
           const currentH = bears.filter((b) => b.state >= 1).length;
           if (currentH === targetH) {
+            playSoundEffect("correct");
             triggerConfetti();
             gameState = 1;
             updateUI();
@@ -580,6 +697,7 @@
           const currentE = bears.filter((b) => b.state === 2).length;
           const targetE = (targetH * f2.n) / f2.d;
           if (currentE === targetE) {
+            playSoundEffect("correct");
             triggerConfetti();
             gameState = 2;
             updateUI();
@@ -603,6 +721,7 @@
           ) {
             finalNum = num;
             finalDen = den;
+            playSoundEffect("correct");
             triggerConfetti();
             gameState = 3;
             updateUI();
@@ -777,6 +896,7 @@
 
             if (canInteract) {
               bearDiv.onclick = () => handleBearClick(bear.id);
+              bearDiv.onmouseenter = playHoverTone;
             }
 
             bearDiv.dataset.bearId = bear.id.toString();
@@ -852,6 +972,7 @@
           popupEquation.innerHTML = getResultEquationHtml();
           updateSuccessPopupEquationPies();
         }
+        playSoundEffect("congrats");
         if (overlay) {
           overlay.classList.add("show");
         }
@@ -976,6 +1097,7 @@
 
       function triggerError() {
         const panel = document.getElementById("control-panel");
+        playSoundEffect("wrong");
         panel.classList.add("animate-shake", "border-red-400");
         panel.classList.remove("border-green-200");
         setTimeout(() => {
@@ -1008,7 +1130,12 @@
       }
 
       // Start game on load
-      window.onload = initGame;
+      window.onload = () => {
+        initAudio();
+        setupAudioUnlockHandlers();
+        initGame();
+        startBackgroundMusic();
+      };
     </script>
   </body>
 </html>
