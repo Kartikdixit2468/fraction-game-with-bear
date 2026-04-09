@@ -8,24 +8,53 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-        20%, 40%, 60%, 80% { transform: translateX(5px); }
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-5px);
+        }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(5px);
+        }
       }
       .animate-shake {
         animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
       }
       @keyframes pop {
-        0% { transform: scale(0.8); opacity: 0; }
-        50% { transform: scale(1.1); opacity: 1; }
-        100% { transform: scale(1); opacity: 1; }
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
       .animate-pop {
         animation: pop 0.3s ease-out forwards;
       }
       @keyframes floatUp {
-        0% { transform: translateY(0) scale(1); opacity: 1; }
-        100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) scale(0);
+          opacity: 0;
+        }
       }
       .confetti-piece {
         position: absolute;
@@ -45,83 +74,148 @@
       }
       /* Custom shadow for the 3D pie chart look */
       .pie-shadow {
-        box-shadow: inset 0 8px 10px rgba(0,0,0,0.1), 0 10px 20px rgba(0,0,0,0.15);
+        box-shadow:
+          inset 0 8px 10px rgba(0, 0, 0, 0.1),
+          0 10px 20px rgba(0, 0, 0, 0.15);
       }
       .pie-initial-bg {
         background: conic-gradient(#e5e7eb 0% 100%);
       }
     </style>
   </head>
-  <body class="h-screen bg-green-50 flex flex-col font-sans select-none overflow-hidden">
+  <body
+    class="h-screen bg-green-50 flex flex-col font-sans select-none overflow-hidden"
+  >
     <!-- Confetti Container -->
-    <div id="confetti-container" class="fixed inset-0 pointer-events-none overflow-hidden z-50"></div>
+    <div
+      id="confetti-container"
+      class="fixed inset-0 pointer-events-none overflow-hidden z-50"
+    ></div>
 
     <!-- Header -->
-    <div class="w-full bg-green-900 text-white p-3 shadow-md flex justify-between items-center z-10 shrink-0">
-      <h1 class="text-xl md:text-2xl font-bold tracking-wider">🐻 Forest Fractions</h1>
-      <button onclick="initGame()" class="bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded-full font-bold text-sm md:text-base transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer">
+    <div
+      class="w-full bg-green-900 text-white p-3 shadow-md flex justify-between items-center z-10 shrink-0"
+    >
+      <h1 class="text-xl md:text-2xl font-bold tracking-wider">
+        🐻 Forest Fractions
+      </h1>
+      <button
+        onclick="initGame()"
+        class="bg-green-700 hover:bg-green-600 px-3 py-1.5 rounded-full font-bold text-sm md:text-base transition-transform active:scale-95 flex items-center gap-1.5 cursor-pointer"
+      >
         <span>↺</span> Restart
       </button>
     </div>
 
     <!-- Main Layout -->
-    <div class="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-3 lg:gap-4 px-3 md:px-5 py-3 md:py-4 overflow-visible">
-
+    <div
+      class="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-3 lg:gap-4 px-3 md:px-5 py-3 md:py-4 overflow-visible"
+    >
       <!-- Top Split: Left Pie / Right Bears -->
-      <div class="flex-1 min-h-0 w-full flex flex-col lg:flex-row gap-3 lg:gap-4">
-
+      <div
+        class="flex-1 min-h-0 w-full flex flex-col lg:flex-row gap-3 lg:gap-4"
+      >
         <!-- LEFT SIDE: Pie Chart (no container card) -->
-        <div id="pie-panel" class="w-full lg:w-[420px] xl:w-[460px] shrink-0 flex flex-col items-center justify-center gap-4 py-1">
-
+        <div
+          id="pie-panel"
+          class="w-full lg:w-[340px] xl:w-[380px] shrink-0 flex flex-col items-center justify-center gap-4 py-1"
+        >
           <div class="relative">
-            <div id="pie-chart" class="w-72 h-72 sm:w-80 sm:h-80 md:w-[22rem] md:h-[22rem] rounded-full border-[6px] border-white pie-shadow pie-initial-bg transition-all duration-700 ease-out"></div>
-            <div class="absolute inset-0 m-auto w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-full pie-shadow flex items-center justify-center">
-              <span class="text-4xl sm:text-5xl">🐻</span>
+            <div
+              id="pie-chart"
+              class="w-56 h-56 sm:w-64 sm:h-64 md:w-[16rem] md:h-[16rem] rounded-full border-[6px] border-white pie-shadow pie-initial-bg transition-all duration-700 ease-out"
+            ></div>
+            <div
+              class="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full pie-shadow flex items-center justify-center"
+            >
+              <span class="text-2xl sm:text-3xl">🐻</span>
             </div>
           </div>
 
-          <div id="pie-indicators" class="w-[92%] flex flex-col gap-2 text-sm sm:text-base font-semibold text-green-900">
-            <div class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1.5">
-              <span class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500 shrink-0"></span>
+          <div
+            id="pie-indicators"
+            class="w-[92%] flex flex-col gap-2 text-sm sm:text-base font-semibold text-green-900"
+          >
+            <div
+              class="flex items-center gap-2 bg-yellow-50/90 border border-yellow-200 rounded-lg px-3 py-1.5"
+            >
+              <span
+                class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500 shrink-0"
+              ></span>
               <span>Yellow = Bears With Honey</span>
             </div>
-            <div class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-1.5">
-              <span class="w-3 h-3 rounded-full bg-green-400 border border-green-500 shrink-0"></span>
+            <div
+              class="flex items-center gap-2 bg-green-50/90 border border-green-200 rounded-lg px-3 py-1.5"
+            >
+              <span
+                class="w-3 h-3 rounded-full bg-green-400 border border-green-500 shrink-0"
+              ></span>
               <span>Green = Bears That Ate Honey</span>
             </div>
           </div>
 
           <!-- Final Equation Reveal (Hidden until end) -->
-          <div id="final-equation" class="hidden w-[92%] flex-col items-center gap-2 bg-green-100 border-2 border-green-300 p-3 rounded-xl animate-pop">
-            <span class="text-green-800 text-xs sm:text-sm font-bold text-center">Fraction Multiplication!</span>
-            <div id="equation-content" class="flex items-center justify-center gap-2 md:gap-3 bg-white px-4 py-2 rounded-lg shadow-sm w-full">
+          <div
+            id="final-equation"
+            class="hidden w-[92%] flex-col items-center gap-2 bg-green-100 border-2 border-green-300 p-3 rounded-xl animate-pop"
+          >
+            <span
+              class="text-green-800 text-xs sm:text-sm font-bold text-center"
+              >Fraction Multiplication!</span
+            >
+            <div
+              id="equation-content"
+              class="flex items-center justify-center gap-2 md:gap-3 bg-white px-4 py-2 rounded-lg shadow-sm w-full"
+            >
               <!-- Equation injected here -->
             </div>
           </div>
         </div>
 
         <!-- RIGHT SIDE: Game Board (no container card) -->
-        <div id="game-board-container" class="flex-1 min-h-0 min-w-0 flex flex-col items-center justify-center p-1 sm:p-2 md:p-3 overflow-visible">
-          <div id="game-board" class="flex flex-col gap-1.5 md:gap-2.5 lg:gap-3 w-full items-center">
+        <div
+          id="game-board-container"
+          class="flex-1 min-h-0 min-w-0 flex flex-col items-center justify-center p-1 sm:p-2 md:p-3 overflow-visible"
+        >
+          <div
+            id="game-board"
+            class="flex flex-col gap-1.5 md:gap-2.5 lg:gap-3 w-full items-center"
+          >
             <!-- Bears will be injected here -->
           </div>
         </div>
       </div>
 
       <!-- Bottom Instruction & Action Panel -->
-      <div id="control-panel" class="w-[92%] md:w-[90%] max-w-5xl mx-auto bg-white rounded-2xl p-3 md:p-4 shadow-xl border-4 border-green-200 flex flex-col md:flex-row items-center gap-3 md:gap-4 justify-between transition-colors shrink-0">
-        <div class="flex-1 flex items-center gap-2.5 md:gap-3 text-sm sm:text-base md:text-lg text-green-900 font-medium w-full">
-          <div id="icon-container" class="bg-yellow-100 p-2 rounded-full shrink-0 text-lg">📝</div>
-          <div id="instruction-text" class="flex-1 flex items-center flex-wrap leading-snug">
+      <div
+        id="control-panel"
+        class="w-[60%] md:w-[75%] max-w-5xl mx-auto bg-white rounded-2xl p-3 md:p-4 shadow-xl border-4 border-green-200 flex flex-col md:flex-row items-center gap-3 md:gap-4 justify-between transition-colors shrink-0"
+      >
+        <div
+          class="flex-1 flex items-center gap-2.5 md:gap-3 text-sm sm:text-base md:text-lg text-green-900 font-medium w-full"
+        >
+          <div
+            id="icon-container"
+            class="bg-yellow-100 p-2 rounded-full shrink-0 text-lg"
+          >
+            📝
+          </div>
+          <div
+            id="instruction-text"
+            class="flex-1 flex items-center flex-wrap leading-snug"
+          >
             <!-- Instructions injected here -->
           </div>
         </div>
 
-        <button id="action-btn" onclick="handleAction()" class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap">
+        <button
+          id="action-btn"
+          onclick="handleAction()"
+          class="bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap"
+        >
           DONE
         </button>
       </div>
-
     </div>
 
     <script>
@@ -182,14 +276,14 @@
         }));
 
         gameState = 0;
-        document.getElementById('final-equation').classList.add('hidden');
+        document.getElementById("final-equation").classList.add("hidden");
         updateUI();
         renderBears();
         updateChart(); // Initial chart render
       }
 
       function handleBearClick(index) {
-        if (gameState === 3) return; 
+        if (gameState === 3) return;
 
         const bear = bears[index];
 
@@ -206,7 +300,7 @@
 
       function handleAction() {
         const panel = document.getElementById("control-panel");
-        
+
         if (gameState === 0) {
           const currentH = bears.filter((b) => b.state >= 1).length;
           if (currentH === targetH) {
@@ -234,7 +328,12 @@
           const targetE = (targetH * f2.n) / f2.d;
           const targetRatio = targetE / totalBears;
 
-          if (!isNaN(num) && !isNaN(den) && den !== 0 && Math.abs(num / den - targetRatio) < 0.001) {
+          if (
+            !isNaN(num) &&
+            !isNaN(den) &&
+            den !== 0 &&
+            Math.abs(num / den - targetRatio) < 0.001
+          ) {
             finalNum = num;
             finalDen = den;
             triggerConfetti();
@@ -250,8 +349,8 @@
 
       // --- Live Chart Logic ---
       function updateChart() {
-        const chart = document.getElementById('pie-chart');
-        
+        const chart = document.getElementById("pie-chart");
+
         const currentH = bears.filter((b) => b.state >= 1).length;
         const currentE = bears.filter((b) => b.state === 2).length;
 
@@ -272,35 +371,67 @@
         const boardContainer = document.getElementById("game-board-container");
         board.innerHTML = "";
 
-        const boardWidth = Math.max(340, Math.floor(boardContainer.clientWidth));
+        const boardWidth = Math.max(
+          340,
+          Math.floor(boardContainer.clientWidth),
+        );
         const sidePadding = Math.max(10, Math.floor(boardWidth * 0.03));
         const usableWidth = Math.max(280, boardWidth - sidePadding * 2);
-        const gapSize = Math.max(4, Math.min(12, Math.floor(usableWidth * 0.012)));
-        const bearSize = Math.max(54, Math.min(96, Math.floor((usableWidth - gapSize * (cols - 1)) / cols)));
-        const honeySize = Math.max(24, Math.floor(bearSize * 0.55));
-        const sparkleSize = Math.max(20, Math.floor(bearSize * 0.42));
-        const platformHeight = Math.max(28, Math.min(44, Math.floor(bearSize * 0.42)));
+        const gapSize = Math.max(
+          3,
+          Math.min(9, Math.floor(usableWidth * 0.009)),
+        );
+        const baseBearSize = Math.floor(
+          (usableWidth - gapSize * (cols - 1)) / cols,
+        );
+        const bearSize = Math.max(
+          38,
+          Math.min(66, Math.floor(baseBearSize * 0.92)),
+        );
+        const honeySize = Math.max(18, Math.floor(bearSize * 0.48));
+        const sparkleSize = Math.max(16, Math.floor(bearSize * 0.34));
+        const platformHeight = Math.max(
+          24,
+          Math.min(34, Math.floor(bearSize * 0.34)),
+        );
         const platformBorder = Math.max(4, Math.floor(platformHeight * 0.16));
+        const bearLift = Math.max(5, Math.floor(bearSize * 0.12));
 
         for (let r = 0; r < rows; r++) {
           const rowBears = bears.filter((b) => b.row === r);
           const rowWrapper = document.createElement("div");
-          rowWrapper.className = "relative flex justify-center group w-full box-border";
+          rowWrapper.className =
+            "relative flex justify-center group w-full box-border";
           rowWrapper.style.paddingLeft = `${sidePadding}px`;
           rowWrapper.style.paddingRight = `${sidePadding}px`;
 
           // Platform
           const platform = document.createElement("div");
-          platform.className = "absolute bottom-0 w-[98%] bg-green-800 rounded-full border-green-950 shadow-xl -z-10 group-hover:bg-green-700 transition-colors";
+          const rowSpan =
+            rowBears.length * bearSize +
+            Math.max(0, rowBears.length - 1) * gapSize;
+          const platformExtra = Math.max(80, Math.floor(bearSize * 1.75));
+          const platformWidth = Math.min(
+            boardWidth - Math.floor(sidePadding * 0.15),
+            rowSpan + platformExtra,
+          );
+
+          platform.className =
+            "absolute bottom-0 bg-green-800 rounded-full border-green-950 shadow-xl -z-10 group-hover:bg-green-700 transition-colors";
           platform.style.height = `${platformHeight}px`;
           platform.style.borderBottomWidth = `${platformBorder}px`;
           platform.style.filter = "drop-shadow(0 10px 10px rgba(0,0,0,0.35))";
+          platform.style.width = `${platformWidth}px`;
+          platform.style.left = "50%";
+          platform.style.transform = "translateX(-50%)";
           rowWrapper.appendChild(platform);
 
           // Bears container
           const bearsContainer = document.createElement("div");
-          bearsContainer.className = "flex justify-center px-1.5 items-end relative";
+          bearsContainer.className =
+            "flex justify-center px-1.5 items-end relative";
           bearsContainer.style.gap = `${gapSize}px`;
+          bearsContainer.style.paddingBottom = `${bearLift}px`;
 
           rowBears.forEach((bear) => {
             const bearDiv = document.createElement("div");
@@ -340,7 +471,7 @@
 
         if (gameState === 0) {
           iconContainer.innerHTML = "📝";
-          instructionText.innerHTML = `Give honeypots to ${formatFraction(f1.n, f1.d)} of the <strong>${totalBears}</strong> bears by clicking them.`;
+          instructionText.innerHTML = `Give honeypots to ${formatFraction(f1.n, f1.d)} of the <strong>${totalBears}</strong>   bears by clicking them.`;
           actionBtn.innerHTML = "DONE";
           setupActionButtonClasses(false);
         } else if (gameState === 1) {
@@ -357,8 +488,8 @@
         } else if (gameState === 3) {
           iconContainer.innerHTML = "🎉";
           instructionText.innerHTML = `<span class="text-green-700 font-bold">Amazing job! You solved it correctly! 🌟</span>`;
-          
-          eqContainer.classList.remove('hidden');
+
+          eqContainer.classList.remove("hidden");
           eqContent.innerHTML = `
             ${formatFraction(f1.n, f1.d)}
             <span class="text-green-800 font-black text-base md:text-lg">×</span>
@@ -366,7 +497,7 @@
             <span class="text-green-800 font-black text-base md:text-lg">=</span>
             ${formatFraction(finalNum, finalDen)}
           `;
-          
+
           actionBtn.innerHTML = "PLAY AGAIN";
           setupActionButtonClasses(true);
         }
@@ -375,9 +506,11 @@
       function setupActionButtonClasses(isCompleted) {
         const btn = document.getElementById("action-btn");
         if (isCompleted) {
-          btn.className = "bg-green-500 hover:bg-green-400 text-white px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[4px] transition-all animate-bounce cursor-pointer whitespace-nowrap";
+          btn.className =
+            "bg-green-500 hover:bg-green-400 text-white px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#166534] active:shadow-[0_0px_0_#166534] active:translate-y-[4px] transition-all animate-bounce cursor-pointer whitespace-nowrap";
         } else {
-          btn.className = "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap";
+          btn.className =
+            "bg-yellow-400 hover:bg-yellow-300 text-yellow-900 px-5 sm:px-6 py-2.5 rounded-xl font-bold text-base sm:text-lg shadow-[0_4px_0_#ca8a04] active:shadow-[0_0px_0_#ca8a04] active:translate-y-[4px] transition-all cursor-pointer whitespace-nowrap";
         }
       }
 
@@ -401,10 +534,12 @@
           const confetti = document.createElement("div");
           confetti.className = "confetti-piece text-2xl md:text-3xl";
           confetti.innerHTML = "✨";
-          const startX = x + (Math.random() * window.innerWidth - window.innerWidth/2);
+          const startX =
+            x + (Math.random() * window.innerWidth - window.innerWidth / 2);
           confetti.style.left = startX + "px";
-          confetti.style.top = (y + Math.random() * 100) + "px";
-          confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.top = y + Math.random() * 100 + "px";
+          confetti.style.color =
+            colors[Math.floor(Math.random() * colors.length)];
           container.appendChild(confetti);
           setTimeout(() => {
             if (container.contains(confetti)) container.removeChild(confetti);
