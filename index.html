@@ -160,6 +160,148 @@
         filter: saturate(0.78) brightness(0.88);
         transition: filter 0.28s ease-out;
       }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+      }
+      body {
+        min-height: 100dvh;
+        height: 100dvh;
+      }
+      #main-layout,
+      #play-layout {
+        min-height: 0;
+      }
+      @media (orientation: landscape) and (max-width: 1024px) and (max-height: 560px) {
+        body {
+          overflow: hidden;
+        }
+        #app-header {
+          padding: 0.45rem 0.75rem;
+        }
+        #app-header h1 {
+          font-size: clamp(0.95rem, 2vw, 1.15rem);
+          line-height: 1.1;
+        }
+        #app-header button {
+          padding: 0.3rem 0.65rem;
+          font-size: 0.72rem;
+          line-height: 1.1;
+        }
+        #main-layout {
+          max-width: 100%;
+          gap: 0.45rem;
+          padding: 0.35rem 0.55rem 0.5rem;
+        }
+        #play-layout {
+          flex-direction: row;
+          gap: 0.45rem;
+        }
+        #pie-panel {
+          width: min(30vw, 13.5rem) !important;
+          min-width: min(30vw, 13.5rem);
+          gap: 0.35rem;
+          margin-top: 0 !important;
+        }
+        #chart-mode-row {
+          width: 100%;
+          gap: 0.45rem;
+          font-size: 0.67rem;
+        }
+        #grid-chart-wrap {
+          width: 7.6rem !important;
+          height: 7.6rem !important;
+        }
+        #pie-chart-wrap > .relative {
+          width: 7.6rem !important;
+          height: 7.6rem !important;
+        }
+        #pie-chart-wrap .absolute.inset-0.m-auto {
+          width: 2.65rem;
+          height: 2.65rem;
+        }
+        #pie-chart-honey,
+        #pie-chart-eaten {
+          width: 3.9rem !important;
+          height: 3.9rem !important;
+        }
+        #pie-indicators,
+        #grid-indicators {
+          gap: 0.25rem;
+          font-size: 0.5rem;
+        }
+        #pie-indicators > div,
+        #grid-indicators > div {
+          padding: 0.2rem 0.15rem;
+          gap: 0.15rem;
+          border-radius: 0.45rem;
+        }
+        #game-board-container {
+          padding: 0.1rem 0.25rem 0.2rem;
+        }
+        #control-panel {
+          width: 100% !important;
+          max-width: 100% !important;
+          padding: 0.42rem 0.58rem;
+          gap: 0.35rem;
+          border-radius: 0.95rem;
+        }
+        #control-top-row {
+          flex-direction: row;
+          align-items: center;
+          gap: 0.45rem;
+        }
+        #icon-container {
+          padding: 0.3rem;
+          font-size: 0.92rem;
+        }
+        #instruction-text {
+          line-height: 1.2;
+          font-size: 0.75rem;
+        }
+        #action-btn {
+          padding: 0.45rem 0.85rem;
+          font-size: 0.75rem;
+          line-height: 1;
+        }
+        #final-equation {
+          padding: 0.34rem 0.5rem;
+          gap: 0.2rem;
+        }
+        #final-equation > span {
+          font-size: 0.68rem;
+        }
+        #equation-content {
+          padding: 0.3rem 0.45rem;
+          gap: 0.25rem;
+        }
+      }
+      @media (orientation: landscape) and (max-width: 915px) and (max-height: 430px) {
+        #pie-panel {
+          width: min(28vw, 11.8rem) !important;
+          min-width: min(28vw, 11.8rem);
+        }
+        #grid-chart-wrap {
+          width: 6.6rem !important;
+          height: 6.6rem !important;
+        }
+        #pie-chart-wrap > .relative {
+          width: 6.6rem !important;
+          height: 6.6rem !important;
+        }
+        #pie-chart-honey,
+        #pie-chart-eaten {
+          width: 3.45rem !important;
+          height: 3.45rem !important;
+        }
+        #control-panel {
+          padding: 0.35rem 0.5rem;
+        }
+        #instruction-text {
+          font-size: 0.69rem;
+        }
+      }
     </style>
   </head>
   <body
@@ -229,6 +371,7 @@
 
     <!-- Header -->
     <div
+      id="app-header"
       class="app-content-layer w-full bg-green-900 text-white p-3 shadow-md flex justify-between items-center z-10 shrink-0"
     >
       <h1 class="text-xl md:text-2xl font-bold tracking-wider">
@@ -256,10 +399,12 @@
 
     <!-- Main Layout -->
     <div
+      id="main-layout"
       class="app-content-layer flex-1 w-full max-w-6xl mx-auto flex flex-col gap-2 lg:gap-3 px-2.5 md:px-4 py-2 md:py-3 overflow-visible"
     >
       <!-- Top Split: Left Pie / Right Bears -->
       <div
+        id="play-layout"
         class="flex-1 min-h-0 w-full flex flex-col lg:flex-row gap-2 lg:gap-3"
       >
         <!-- LEFT SIDE: Pie Chart (no container card) -->
@@ -268,6 +413,7 @@
           class="w-full lg:w-[320px] xl:w-[350px] shrink-0 flex flex-col items-center justify-start gap-2 py-0 -mt-1 sm:-mt-2"
         >
           <div
+            id="chart-mode-row"
             class="w-[92%] flex items-center justify-center gap-3 text-xs sm:text-sm font-semibold"
           >
             <span id="chart-mode-pie-label" class="text-green-900">Pie</span>
@@ -413,6 +559,7 @@
         class="w-[72%] md:w-[82%] max-w-5xl mx-auto bg-white rounded-2xl p-2.5 md:p-3 shadow-xl border-4 border-green-200 flex flex-col gap-2 transition-colors shrink-0"
       >
         <div
+            id="control-top-row"
           class="w-full flex flex-col md:flex-row items-center gap-2 md:gap-3 justify-between"
         >
           <div
@@ -1019,18 +1166,27 @@
         const boardContainer = document.getElementById("game-board-container");
         board.innerHTML = "";
 
+        const compactLandscape = window.matchMedia(
+          "(orientation: landscape) and (max-width: 1024px) and (max-height: 560px)",
+        ).matches;
+        const minBoardHeight = compactLandscape ? 180 : 280;
+        const minBoardWidth = compactLandscape ? 260 : 340;
+        const minRowGap = compactLandscape ? 3 : 5;
+        const minBearSize = compactLandscape ? 26 : 34;
+        const maxBearSize = compactLandscape ? 52 : 60;
+
         const boardHeight = Math.max(
-          280,
+          minBoardHeight,
           Math.floor(boardContainer.clientHeight),
         );
         const rowGap = Math.max(
-          5,
+          minRowGap,
           Math.min(10, Math.floor(boardHeight * 0.02)),
         );
         board.style.gap = `${rowGap}px`;
 
         const boardWidth = Math.max(
-          340,
+          minBoardWidth,
           Math.floor(boardContainer.clientWidth),
         );
         const sidePadding = Math.max(10, Math.floor(boardWidth * 0.03));
@@ -1050,18 +1206,18 @@
           Math.floor(baseByHeight * 0.92),
         );
         const bearSize = Math.max(
-          34,
-          Math.min(60, Math.floor(baseBearSize * 0.9)),
+          minBearSize,
+          Math.min(maxBearSize, Math.floor(baseBearSize * 0.9)),
         );
         const honeySize = Math.max(18, Math.floor(bearSize * 0.48));
         const sparkleSize = Math.max(16, Math.floor(bearSize * 0.34));
         currentVisualMetrics = { bearSize, honeySize, sparkleSize };
         const platformHeight = Math.max(
-          24,
-          Math.min(34, Math.floor(bearSize * 0.34)),
+          compactLandscape ? 18 : 24,
+          Math.min(compactLandscape ? 30 : 34, Math.floor(bearSize * 0.34)),
         );
         const platformBorder = Math.max(4, Math.floor(platformHeight * 0.16));
-        const bearLift = Math.max(5, Math.floor(bearSize * 0.12));
+        const bearLift = Math.max(compactLandscape ? 4 : 5, Math.floor(bearSize * 0.12));
 
         for (let r = 0; r < rows; r++) {
           const rowBears = bears.filter((b) => b.row === r);
@@ -1125,11 +1281,25 @@
         }
       }
 
-      window.addEventListener("resize", () => {
-        if (bears.length > 0) {
-          renderBears();
+      let pendingResizeRender = null;
+
+      function rerenderAfterViewportChange() {
+        if (bears.length === 0) return;
+
+        renderBears();
+        if (pendingResizeRender) {
+          clearTimeout(pendingResizeRender);
         }
-      });
+
+        pendingResizeRender = setTimeout(() => {
+          if (bears.length > 0) {
+            renderBears();
+          }
+        }, 180);
+      }
+
+      window.addEventListener("resize", rerenderAfterViewportChange);
+      window.addEventListener("orientationchange", rerenderAfterViewportChange);
 
       function updateUI() {
         const iconContainer = document.getElementById("icon-container");
