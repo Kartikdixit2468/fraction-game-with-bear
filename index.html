@@ -81,37 +81,78 @@
       .pie-initial-bg {
         background: conic-gradient(#e5e7eb 0% 100%);
       }
+      :root {
+        --success-overlay-dark: rgba(2, 6, 23, 0.72);
+        --success-overlay-mid: rgba(15, 23, 42, 0.55);
+        --success-overlay-top: rgba(15, 23, 42, 0.28);
+        --success-overlay-focus: rgba(255, 255, 255, 0.24);
+        --success-overlay-blur: 5px;
+      }
       .success-popup {
         position: fixed;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -160%);
+        transform: translate(-50%, -175%) scale(0.94);
         opacity: 0;
         pointer-events: none;
         z-index: 70;
         transition:
-          transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-          opacity 0.25s ease-out;
+          transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.28s ease-out,
+          filter 0.28s ease-out;
+        filter: drop-shadow(0 24px 28px rgba(2, 6, 23, 0.16));
       }
       .success-popup.show {
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%) scale(1);
         opacity: 1;
         pointer-events: auto;
+        filter: drop-shadow(0 36px 42px rgba(2, 6, 23, 0.34));
       }
       .success-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.45);
-        -webkit-backdrop-filter: blur(2px);
-        backdrop-filter: blur(2px);
+        background:
+          radial-gradient(
+            130% 95% at 50% 45%,
+            rgba(255, 255, 255, 0.08) 0%,
+            var(--success-overlay-mid) 62%,
+            var(--success-overlay-dark) 100%
+          ),
+          linear-gradient(180deg, var(--success-overlay-top) 0%, var(--success-overlay-dark) 100%);
+        -webkit-backdrop-filter: blur(var(--success-overlay-blur)) saturate(0.82) brightness(0.78);
+        backdrop-filter: blur(var(--success-overlay-blur)) saturate(0.82) brightness(0.78);
         opacity: 0;
         pointer-events: none;
         z-index: 65;
-        transition: opacity 0.25s ease-out;
+        transition: opacity 0.3s ease-out;
+      }
+      .success-overlay::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          70% 46% at 50% 47%,
+          var(--success-overlay-focus) 0%,
+          rgba(255, 255, 255, 0.1) 22%,
+          rgba(255, 255, 255, 0) 58%
+        );
+        opacity: 0.95;
       }
       .success-overlay.show {
         opacity: 1;
         pointer-events: auto;
+      }
+      .success-card {
+        box-shadow:
+          0 32px 64px rgba(2, 6, 23, 0.33),
+          0 12px 26px rgba(2, 6, 23, 0.22),
+          inset 0 1px 0 rgba(255, 255, 255, 0.94),
+          inset 0 -1px 0 rgba(16, 185, 129, 0.32);
+      }
+      body.success-modal-active .app-content-layer {
+        filter: saturate(0.78) brightness(0.88);
+        transition: filter 0.28s ease-out;
       }
     </style>
   </head>
@@ -126,9 +167,9 @@
 
     <div id="success-overlay" class="success-overlay"></div>
 
-    <div id="success-popup" class="success-popup w-[96%] max-w-5xl">
+    <div id="success-popup" class="success-popup w-[98%] sm:w-[96%] max-w-6xl">
       <div
-        class="relative bg-white/95 backdrop-blur-sm border-4 border-green-300 rounded-3xl shadow-2xl px-4 py-4 sm:px-6 sm:py-5 max-h-[calc(100vh-2rem)] overflow-y-auto"
+        class="success-card relative bg-gradient-to-b from-white via-white to-emerald-50/75 backdrop-blur-md border-4 border-green-300 rounded-3xl px-5 py-5 sm:px-7 sm:py-6 max-h-[calc(100vh-1.5rem)] overflow-y-auto"
       >
         <button
           type="button"
@@ -178,7 +219,7 @@
 
     <!-- Header -->
     <div
-      class="w-full bg-green-900 text-white p-3 shadow-md flex justify-between items-center z-10 shrink-0"
+      class="app-content-layer w-full bg-green-900 text-white p-3 shadow-md flex justify-between items-center z-10 shrink-0"
     >
       <h1 class="text-xl md:text-2xl font-bold tracking-wider">
         🐻 Forest Fractions
@@ -205,7 +246,7 @@
 
     <!-- Main Layout -->
     <div
-      class="flex-1 w-full max-w-6xl mx-auto flex flex-col gap-2 lg:gap-3 px-2.5 md:px-4 py-2 md:py-3 overflow-visible"
+      class="app-content-layer flex-1 w-full max-w-6xl mx-auto flex flex-col gap-2 lg:gap-3 px-2.5 md:px-4 py-2 md:py-3 overflow-visible"
     >
       <!-- Top Split: Left Pie / Right Bears -->
       <div
@@ -252,7 +293,7 @@
             id="grid-chart-wrap"
             class="w-48 h-48 sm:w-56 sm:h-56 md:w-[14rem] md:h-[14rem]"
           >
-            <div id="block-grid" class="w-full h-full grid gap-1 sm:gap-1.5">
+            <div id="block-grid" class="w-full h-full grid gap-1.5 sm:gap-2">
               <!-- Blocks injected dynamically -->
             </div>
           </div>
@@ -817,6 +858,12 @@
           #e5e7eb ${split2End}% 100%
         )`;
 
+          // Count yellow stack depth per column so deeper columns can get a longer yellow base.
+          const yellowColumnCounts = Array(cols).fill(0);
+          for (let i = currentE; i < currentH; i++) {
+            yellowColumnCounts[i % cols] += 1;
+          }
+
           // Grid blocks are count-based (sequential), not tied to specific bear positions.
           // This means any click updates the next visual block in order.
           for (let i = 0; i < totalBears; i++) {
@@ -828,28 +875,32 @@
 
             if (i < currentE) {
               // First currentE blocks = eaten (green)
+              const hasUnderlyingHoneyLayer = currentH > currentE;
               block.classList.add(
                 "bg-gradient-to-b",
                 "from-green-400",
                 "to-green-500",
                 "border-green-700",
-                "-translate-y-[4px]",
+                hasUnderlyingHoneyLayer ? "-translate-y-[6px]" : "-translate-y-[4px]",
                 "shadow-lg",
               );
-              block.style.boxShadow =
-                "0 2px 0 #fde047, 0 4px 0 #ffffff, 0 7px 0 #d1d5db, 0 11px 13px rgba(0,0,0,0.20)";
+              block.style.boxShadow = hasUnderlyingHoneyLayer
+                ? "0 2px 0 #fde047, 0 6px 0 #facc15, 0 10px 0 #ffffff, 0 14px 0 #dbe4ef, 0 19px 21px rgba(15,23,42,0.27)"
+                : "0 2px 0 #ffffff, 0 6px 0 #dbe4ef, 0 13px 15px rgba(15,23,42,0.23)";
             } else if (i < currentH) {
               // Next blocks up to currentH = honey only (yellow)
+              const hasLongYellowBase = yellowColumnCounts[i % cols] >= 3;
               block.classList.add(
                 "bg-gradient-to-b",
                 "from-yellow-300",
                 "to-yellow-400",
                 "border-yellow-500",
-                "-translate-y-[2px]",
+                hasLongYellowBase ? "-translate-y-[6px]" : "-translate-y-[3px]",
                 "shadow-md",
               );
-              block.style.boxShadow =
-                "0 2px 0 #ffffff, 0 4px 0 #e2e8f0, 0 7px 0 #cbd5e1, 0 11px 13px rgba(0,0,0,0.17)";
+              block.style.boxShadow = hasLongYellowBase
+                ? "0 2px 0 #fffdf0, 0 7px 0 #fde047, 0 13px 0 #dbe4ef, 0 19px 21px rgba(15,23,42,0.27)"
+                : "0 2px 0 #ffffff, 0 5px 0 #dbe4ef, 0 11px 13px rgba(15,23,42,0.19)";
             } else {
               // Remaining blocks = empty
               block.classList.add(
@@ -858,7 +909,8 @@
                 "to-slate-200",
                 "border-slate-300",
               );
-              block.style.boxShadow = "0 2px 5px rgba(0,0,0,0.08)";
+              block.style.boxShadow =
+                "0 1px 0 #f8fafc, 0 3px 0 #e2e8f0, 0 7px 10px rgba(15,23,42,0.12)";
             }
         }
       }
@@ -1027,6 +1079,7 @@
         if (overlay) {
           overlay.classList.add("show");
         }
+        document.body.classList.add("success-modal-active");
         popup.classList.add("show");
       }
 
@@ -1039,6 +1092,7 @@
         if (overlay) {
           overlay.classList.remove("show");
         }
+        document.body.classList.remove("success-modal-active");
       }
 
       function getResultEquationHtml() {
