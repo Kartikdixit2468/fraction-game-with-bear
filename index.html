@@ -858,10 +858,14 @@
           #e5e7eb ${split2End}% 100%
         )`;
 
-          // Count yellow stack depth per column so deeper columns can get a longer yellow base.
+          // Track yellow depth per column and each block's rank in that column.
+          // This prevents all blocks in a column from switching style at once.
           const yellowColumnCounts = Array(cols).fill(0);
+          const yellowColumnRanks = Array(totalBears).fill(0);
           for (let i = currentE; i < currentH; i++) {
-            yellowColumnCounts[i % cols] += 1;
+            const colIndex = i % cols;
+            yellowColumnCounts[colIndex] += 1;
+            yellowColumnRanks[i] = yellowColumnCounts[colIndex];
           }
 
           // Grid blocks are count-based (sequential), not tied to specific bear positions.
@@ -889,7 +893,10 @@
                 : "0 2px 0 #ffffff, 0 6px 0 #dbe4ef, 0 13px 15px rgba(15,23,42,0.23)";
             } else if (i < currentH) {
               // Next blocks up to currentH = honey only (yellow)
-              const hasLongYellowBase = yellowColumnCounts[i % cols] >= 3;
+              const colIndex = i % cols;
+              const columnDepth = yellowColumnCounts[colIndex];
+              const isTopYellowInColumn = yellowColumnRanks[i] === columnDepth;
+              const hasLongYellowBase = columnDepth >= 3 && isTopYellowInColumn;
               block.classList.add(
                 "bg-gradient-to-b",
                 "from-yellow-300",
