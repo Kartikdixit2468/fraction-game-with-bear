@@ -118,9 +118,15 @@
             var(--success-overlay-mid) 62%,
             var(--success-overlay-dark) 100%
           ),
-          linear-gradient(180deg, var(--success-overlay-top) 0%, var(--success-overlay-dark) 100%);
-        -webkit-backdrop-filter: blur(var(--success-overlay-blur)) saturate(0.82) brightness(0.78);
-        backdrop-filter: blur(var(--success-overlay-blur)) saturate(0.82) brightness(0.78);
+          linear-gradient(
+            180deg,
+            var(--success-overlay-top) 0%,
+            var(--success-overlay-dark) 100%
+          );
+        -webkit-backdrop-filter: blur(var(--success-overlay-blur))
+          saturate(0.82) brightness(0.78);
+        backdrop-filter: blur(var(--success-overlay-blur)) saturate(0.82)
+          brightness(0.78);
         opacity: 0;
         pointer-events: none;
         z-index: 65;
@@ -194,8 +200,12 @@
             </p>
           </div>
 
-          <div class="mt-4 bg-green-50 border-2 border-green-200 rounded-2xl p-3 sm:p-4">
-            <p class="text-green-900 font-bold text-sm sm:text-lg text-center">Result Equation</p>
+          <div
+            class="mt-4 bg-green-50 border-2 border-green-200 rounded-2xl p-3 sm:p-4"
+          >
+            <p class="text-green-900 font-bold text-sm sm:text-lg text-center">
+              Result Equation
+            </p>
             <div
               id="success-popup-equation"
               class="mt-2 bg-white rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5"
@@ -272,9 +282,7 @@
                 class="absolute top-1 left-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300"
               ></span>
             </button>
-            <span id="chart-mode-grid-label" class="text-green-500"
-              >Grid</span
-            >
+            <span id="chart-mode-grid-label" class="text-green-500">Grid</span>
           </div>
 
           <div id="pie-chart-wrap" class="relative hidden">
@@ -357,7 +365,6 @@
               <span>Bears that Ate Honey</span>
             </div>
           </div>
-
         </div>
 
         <!-- RIGHT SIDE: Game Board (no container card) -->
@@ -379,7 +386,9 @@
         id="control-panel"
         class="w-[60%] md:w-[75%] max-w-5xl mx-auto bg-white rounded-2xl p-2.5 md:p-3 shadow-xl border-4 border-green-200 flex flex-col gap-2 transition-colors shrink-0"
       >
-        <div class="w-full flex flex-col md:flex-row items-center gap-2 md:gap-3 justify-between">
+        <div
+          class="w-full flex flex-col md:flex-row items-center gap-2 md:gap-3 justify-between"
+        >
           <div
             class="flex-1 flex items-center gap-2 md:gap-2.5 text-xs sm:text-sm md:text-base text-green-900 font-medium w-full"
           >
@@ -389,10 +398,7 @@
             >
               📝
             </div>
-            <div
-              id="instruction-text"
-              class="flex-1 leading-snug"
-            >
+            <div id="instruction-text" class="flex-1 leading-snug">
               <!-- Instructions injected here -->
             </div>
           </div>
@@ -436,7 +442,11 @@
       let finalNum = 0;
       let finalDen = 0;
       let chartMode = "grid";
-      let currentVisualMetrics = { bearSize: 56, honeySize: 24, sparkleSize: 20 };
+      let currentVisualMetrics = {
+        bearSize: 56,
+        honeySize: 24,
+        sparkleSize: 20,
+      };
       let bgMusic = null;
       let isAudioInitialized = false;
       let hoverAudioCtx = null;
@@ -539,7 +549,8 @@
         if (now - lastHoverToneAt < 90) return;
         lastHoverToneAt = now;
 
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        const AudioContextClass =
+          window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) return;
 
         if (!hoverAudioCtx) {
@@ -646,7 +657,9 @@
 
         toggle.classList.toggle("bg-slate-300", !gridActive);
         toggle.classList.toggle("bg-green-600", gridActive);
-        thumb.style.transform = gridActive ? "translateX(24px)" : "translateX(0px)";
+        thumb.style.transform = gridActive
+          ? "translateX(24px)"
+          : "translateX(0px)";
 
         pieLabel.classList.toggle("text-green-900", !gridActive);
         pieLabel.classList.toggle("text-green-500", gridActive);
@@ -681,7 +694,11 @@
           renderBears();
           return;
         }
-        bearDiv.innerHTML = getBearHtml(bears[index], currentVisualMetrics, animateEffects);
+        bearDiv.innerHTML = getBearHtml(
+          bears[index],
+          currentVisualMetrics,
+          animateEffects,
+        );
       }
 
       function updateEquationDisplay(showResult = false) {
@@ -858,67 +875,74 @@
           #e5e7eb ${split2End}% 100%
         )`;
 
-          // Track yellow depth per column and each block's rank in that column.
-          // This prevents all blocks in a column from switching style at once.
-          const yellowColumnCounts = Array(cols).fill(0);
-          const yellowColumnRanks = Array(totalBears).fill(0);
-          for (let i = currentE; i < currentH; i++) {
-            const colIndex = i % cols;
-            yellowColumnCounts[colIndex] += 1;
-            yellowColumnRanks[i] = yellowColumnCounts[colIndex];
+        // Track yellow depth per column and each block's rank in that column.
+        // This prevents all blocks in a column from switching style at once.
+        const yellowColumnCounts = Array(cols).fill(0);
+        const yellowColumnRanks = Array(totalBears).fill(0);
+        for (let i = currentE; i < currentH; i++) {
+          const colIndex = i % cols;
+          yellowColumnCounts[colIndex] += 1;
+          yellowColumnRanks[i] = yellowColumnCounts[colIndex];
+        }
+
+        // Grid blocks are count-based (sequential), not tied to specific bear positions.
+        // Reapply shadows from a clean baseline with per-column stack rules.
+        for (let i = 0; i < totalBears; i++) {
+          const block = document.getElementById(`grid-block-${i}`);
+          if (!block) continue;
+
+          const colIndex = i % cols;
+          const rowIndex = Math.floor(i / cols);
+          const yellowDepth = yellowColumnCounts[colIndex];
+          const yellowRank = yellowColumnRanks[i];
+          const isTopYellowInColumn =
+            i >= currentE && i < currentH && yellowRank === yellowDepth;
+          const touchesFloor = rowIndex === rows - 1;
+          const hasUnderlyingHoneyLayer = i + cols >= currentE && i + cols < currentH;
+          const hasLongYellowBase =
+            yellowDepth >= 3 && isTopYellowInColumn && touchesFloor;
+
+          block.className =
+            "w-full h-full rounded-md sm:rounded-lg border-b-[3px] sm:border-b-[4px] shadow-sm transition-all duration-300";
+
+          if (i < currentE) {
+            block.classList.add(
+              "bg-gradient-to-b",
+              "from-green-400",
+              "to-green-500",
+              "border-green-700",
+              hasUnderlyingHoneyLayer ? "-translate-y-[6px]" : "-translate-y-[4px]",
+              "shadow-lg",
+            );
+
+            // Three-layer stack: show a thicker yellow middle layer between green and gray.
+            block.style.boxShadow = hasUnderlyingHoneyLayer
+              ? "0 2px 0 #fde047, 0 7px 0 #facc15, 0 12px 0 #fff, 0 18px 20px rgba(15,23,42,0.26)"
+              : "0 2px 0 #ffffff, 0 5px 0 #dbe4ef, 0 11px 13px rgba(15,23,42,0.21)";
+          } else if (i < currentH) {
+            block.classList.add(
+              "bg-gradient-to-b",
+              "from-yellow-300",
+              "to-yellow-400",
+              "border-yellow-500",
+              hasLongYellowBase ? "-translate-y-[5px]" : "-translate-y-[3px]",
+              "shadow-md",
+            );
+
+            // Neutral depth stack: white edge + gray base only.
+            block.style.boxShadow = hasLongYellowBase
+              ? "0 2px 0 #ffffff, 0 8px 0 #dbe4ef, 0 14px 16px rgba(15,23,42,0.24)"
+              : "0 2px 0 #ffffff, 0 5px 0 #dbe4ef, 0 11px 13px rgba(15,23,42,0.19)";
+          } else {
+            block.classList.add(
+              "bg-gradient-to-b",
+              "from-slate-100",
+              "to-slate-200",
+              "border-slate-300",
+            );
+            block.style.boxShadow =
+              "0 1px 0 #f8fafc, 0 3px 0 #e2e8f0, 0 7px 10px rgba(15,23,42,0.12)";
           }
-
-          // Grid blocks are count-based (sequential), not tied to specific bear positions.
-          // This means any click updates the next visual block in order.
-          for (let i = 0; i < totalBears; i++) {
-            const block = document.getElementById(`grid-block-${i}`);
-            if (!block) continue;
-
-            block.className =
-              "w-full h-full rounded-md sm:rounded-lg border-b-[3px] sm:border-b-[4px] shadow-sm transition-all duration-300";
-
-            if (i < currentE) {
-              // First currentE blocks = eaten (green)
-              const hasUnderlyingHoneyLayer = currentH > currentE;
-              block.classList.add(
-                "bg-gradient-to-b",
-                "from-green-400",
-                "to-green-500",
-                "border-green-700",
-                hasUnderlyingHoneyLayer ? "-translate-y-[6px]" : "-translate-y-[4px]",
-                "shadow-lg",
-              );
-              block.style.boxShadow = hasUnderlyingHoneyLayer
-                ? "0 2px 0 #fde047, 0 6px 0 #facc15, 0 10px 0 #ffffff, 0 14px 0 #dbe4ef, 0 19px 21px rgba(15,23,42,0.27)"
-                : "0 2px 0 #ffffff, 0 6px 0 #dbe4ef, 0 13px 15px rgba(15,23,42,0.23)";
-            } else if (i < currentH) {
-              // Next blocks up to currentH = honey only (yellow)
-              const colIndex = i % cols;
-              const columnDepth = yellowColumnCounts[colIndex];
-              const isTopYellowInColumn = yellowColumnRanks[i] === columnDepth;
-              const hasLongYellowBase = columnDepth >= 3 && isTopYellowInColumn;
-              block.classList.add(
-                "bg-gradient-to-b",
-                "from-yellow-300",
-                "to-yellow-400",
-                "border-yellow-500",
-                hasLongYellowBase ? "-translate-y-[6px]" : "-translate-y-[3px]",
-                "shadow-md",
-              );
-              block.style.boxShadow = hasLongYellowBase
-                ? "0 2px 0 #fffdf0, 0 7px 0 #fde047, 0 13px 0 #dbe4ef, 0 19px 21px rgba(15,23,42,0.27)"
-                : "0 2px 0 #ffffff, 0 5px 0 #dbe4ef, 0 11px 13px rgba(15,23,42,0.19)";
-            } else {
-              // Remaining blocks = empty
-              block.classList.add(
-                "bg-gradient-to-b",
-                "from-slate-100",
-                "to-slate-200",
-                "border-slate-300",
-              );
-              block.style.boxShadow =
-                "0 1px 0 #f8fafc, 0 3px 0 #e2e8f0, 0 7px 10px rgba(15,23,42,0.12)";
-            }
         }
       }
 
@@ -928,8 +952,14 @@
         const boardContainer = document.getElementById("game-board-container");
         board.innerHTML = "";
 
-        const boardHeight = Math.max(280, Math.floor(boardContainer.clientHeight));
-        const rowGap = Math.max(5, Math.min(10, Math.floor(boardHeight * 0.02)));
+        const boardHeight = Math.max(
+          280,
+          Math.floor(boardContainer.clientHeight),
+        );
+        const rowGap = Math.max(
+          5,
+          Math.min(10, Math.floor(boardHeight * 0.02)),
+        );
         board.style.gap = `${rowGap}px`;
 
         const boardWidth = Math.max(
@@ -942,9 +972,16 @@
           3,
           Math.min(9, Math.floor(usableWidth * 0.009)),
         );
-        const baseByWidth = Math.floor((usableWidth - gapSize * (cols - 1)) / cols);
-        const baseByHeight = Math.floor((boardHeight - rowGap * (rows - 1)) / rows);
-        const baseBearSize = Math.min(baseByWidth, Math.floor(baseByHeight * 0.92));
+        const baseByWidth = Math.floor(
+          (usableWidth - gapSize * (cols - 1)) / cols,
+        );
+        const baseByHeight = Math.floor(
+          (boardHeight - rowGap * (rows - 1)) / rows,
+        );
+        const baseBearSize = Math.min(
+          baseByWidth,
+          Math.floor(baseByHeight * 0.92),
+        );
         const bearSize = Math.max(
           34,
           Math.min(60, Math.floor(baseBearSize * 0.9)),
@@ -999,10 +1036,12 @@
             const bearDiv = document.createElement("div");
             const inactiveDuringStep2 = gameState === 1 && bear.state === 0;
             const inactiveDuringStep3 = gameState === 2 && bear.state !== 2;
-            const canInteract = gameState === 0 || (gameState === 1 && bear.state > 0);
+            const canInteract =
+              gameState === 0 || (gameState === 1 && bear.state > 0);
 
             bearDiv.className = `relative transition-all duration-200 ${canInteract ? "hover:-translate-y-2 cursor-pointer active:scale-90" : "cursor-default"}`;
-            bearDiv.style.opacity = inactiveDuringStep2 || inactiveDuringStep3 ? "0.5" : "1";
+            bearDiv.style.opacity =
+              inactiveDuringStep2 || inactiveDuringStep3 ? "0.5" : "1";
 
             if (canInteract) {
               bearDiv.onclick = () => handleBearClick(bear.id);
@@ -1077,7 +1116,8 @@
         const popupEquation = document.getElementById("success-popup-equation");
         if (!popup || !popupText) return;
 
-        popupText.textContent = message || "Amazing job! You solved it correctly! 🌟";
+        popupText.textContent =
+          message || "Amazing job! You solved it correctly! 🌟";
         if (popupEquation) {
           popupEquation.innerHTML = getResultEquationHtml();
           updateSuccessPopupEquationPies();
@@ -1154,11 +1194,24 @@
         setFractionMiniPie(pieResult, finalNum, finalDen, "#22c55e", "#e5e7eb");
       }
 
-      function setNestedFractionMiniPie(pieElement, baseNum, baseDen, partNum, partDen) {
-        if (!pieElement || !baseDen || baseDen <= 0 || !partDen || partDen <= 0) return;
+      function setNestedFractionMiniPie(
+        pieElement,
+        baseNum,
+        baseDen,
+        partNum,
+        partDen,
+      ) {
+        if (!pieElement || !baseDen || baseDen <= 0 || !partDen || partDen <= 0)
+          return;
 
-        const basePercent = Math.max(0, Math.min(100, (baseNum / baseDen) * 100));
-        const nestedPercent = Math.max(0, Math.min(basePercent, (partNum / partDen) * basePercent));
+        const basePercent = Math.max(
+          0,
+          Math.min(100, (baseNum / baseDen) * 100),
+        );
+        const nestedPercent = Math.max(
+          0,
+          Math.min(basePercent, (partNum / partDen) * basePercent),
+        );
 
         if (basePercent <= 0) {
           pieElement.style.background = "conic-gradient(#e5e7eb 0% 100%)";
@@ -1167,10 +1220,12 @@
 
         const sep = 0.8;
         const greenEnd = nestedPercent;
-        const split1End = greenEnd < basePercent ? Math.min(100, greenEnd + sep) : greenEnd;
+        const split1End =
+          greenEnd < basePercent ? Math.min(100, greenEnd + sep) : greenEnd;
         const yellowStart = split1End;
         const yellowEnd = Math.max(yellowStart, basePercent);
-        const split2End = yellowEnd < 100 ? Math.min(100, yellowEnd + sep) : yellowEnd;
+        const split2End =
+          yellowEnd < 100 ? Math.min(100, yellowEnd + sep) : yellowEnd;
 
         pieElement.style.background = `conic-gradient(
           #4ade80 0% ${greenEnd}%,
